@@ -10,8 +10,11 @@ Print the three parts to the syringe pump (idler, carriage, and motor assembly).
 - The syringe support is connected with a M3x24 bolt.  The spring is optional but I find it helpful when loading/unloading the syringes as it keeps tension on the nut and prevents it from turning.  My 'source' of the spring was an empty retractable ball point pen; I happened to find one with the right diameter (a bit larger than the M3 bolt diameter) and cut it to size.
 
 ![The idler nut traps are the trickest place to reach](step2a.jpg)
+*The idler nut traps are the trickest place to reach*
 ![use needle nose pliers to help](step2b.jpg)
+*use needle nose pliers to help*
 ![An optional spring makes inserting/removing the syringes easier](step2c.jpg)
+*An optional spring makes inserting/removing the syringes easier*
 
 ##Step 3. Support rods
 - Slide the support rods into their clamps and push them through until the ends are flush with the idler.  Use M3x10 bolts to clamp the rods tightly.  If you cannot rotate the rods easily, then you have tightened sufficiently.
