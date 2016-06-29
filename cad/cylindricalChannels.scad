@@ -1,15 +1,17 @@
 //Test leaking with a simple mixer
 //Print with 0.2 mm layer height and 0.3 mm first layer
 
-base = 0.5; 
+firstlayerheight = 0.2;
+layerheight = 0.1;
+base = firstlayerheight + layerheight; 
 edge = 1.5; // aiming for a 1.5 mm perimeter
 cd = 2; //Channel diameter
 cr = cd/2; //Channel radius
 dx = 20+2*edge+cd;
 dy = 30;
-dz = 2*base+cd;
+dz = base+cd+2*layerheight;
 
-$design = true;
+$design = false;
 
 //Rotations to make channel construction easier
 y = [-1,0,0];

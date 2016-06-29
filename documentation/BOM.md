@@ -21,19 +21,25 @@
 
 
 ### syringe pump
-- 1/4" steel rod, 150 mm length, (1)
-- 1/4"-20 TPI threaded steel rod, 170 mm length (1)
+- 1/4" steel rod, 140 mm length, (2)
+- 1/4"-20 TPI threaded steel rod, 155 mm length (1)
 - 5V DC small reduction stepper motor from [Adafruit](https://www.adafruit.com/products/858).
-- M3x10 hex-bolts (10)
-- M3 hex nuts
-- M3x20 hex bolts (3)
-- 1/4" 20 TPI nuts (4)
-- 1/4" 20 TPI jamnuts (4)
+- M3x10 hex-bolts (4)
+- M3x16 hex bolts (2)
+- M3x25 hex bolts (3)
+- M3 hex nuts (12)
+- 1/4" 20 TPI nuts (3)
+- 1/4" 20 TPI jamnuts (2)
 - Syringes
 
     The default configuration uses a 3-mL HSW luer slip eccentric syringe which can be found at [Restek](http://www.restek.com/catalog/view/8027) although I purchased my batch from Fisher Scientific (and they apprently no longer sell them).  A different syringe can be used by adjusting the parameters in the global file.
 
 
 ### fluidics system
-- silicone tubing (Cole Parmer) 
+- flexible tubing with an outer diameter of approximately 1.8 mm
 - quick-setting epoxy
+
+### controller
+- Arduino Uno or similar
+- L293D dual H bridge or similar
+- hookup wire
