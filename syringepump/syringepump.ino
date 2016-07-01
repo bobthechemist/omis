@@ -11,6 +11,8 @@
 #define LVR 13.0
 #define STEPS 513
 
+#define VERSION 0.2
+
 CommandParser cp;
 Pump pump1(STEPS, P1, P2, P3, P4, MA, TPM, LVR);
 
@@ -21,6 +23,9 @@ void setup() {
     ; //Wait for connect
   }
   Serial.println("Syringe pump communications established");
+  Serial.print("This is version ");
+  Serial.print(VERSION);
+  Serial.println(".");
 
   // Set an initial speed
   pump1.setSpeed(25);
