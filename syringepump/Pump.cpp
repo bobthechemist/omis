@@ -18,7 +18,7 @@
  * two-wire constructor.
  * Sets which wires should control the motor.
  */
-Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
+Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2, int enable_pin,
             float mechanicalAdvantage, float threadsPerMillimeter, 
             float syringeLinearVolumeRatio)
 {
@@ -43,6 +43,11 @@ Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
   // pin_count is used by the stepMotor() method:
   this->pin_count = 2;
 
+  // setup enable pin and enable the L293D
+  this->enable_pin = enable_pin;
+  pinMode(this->enable_pin, OUTPUT);
+  digitalWrite(this->enable_pin, HIGH);
+
   // setup pump data
   this->mechanicalAdvantage = mechanicalAdvantage;
   this->threadsPerMillimeter = threadsPerMillimeter;
@@ -55,7 +60,7 @@ Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
  *   Sets which wires should control the motor.
  */
 Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
-            int motor_pin_3, int motor_pin_4, float mechanicalAdvantage, 
+            int motor_pin_3, int motor_pin_4, int enable_pin, float mechanicalAdvantage, 
             float threadsPerMillimeter, float syringeLinearVolumeRatio)
 {
   this->step_number = 0;    // which step the motor is on
@@ -81,6 +86,11 @@ Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
   // pin_count is used by the stepMotor() method:
   this->pin_count = 4;
 
+  // setup enable pin and enable the L293D
+  this->enable_pin = enable_pin;
+  pinMode(this->enable_pin, OUTPUT);
+  digitalWrite(this->enable_pin, HIGH);
+  
   // setup pump data
   this->mechanicalAdvantage = mechanicalAdvantage;
   this->threadsPerMillimeter = threadsPerMillimeter;
@@ -92,7 +102,7 @@ Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
  *   Sets which wires should control the motor.
  */
 Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
-            int motor_pin_3, int motor_pin_4, int motor_pin_5,
+            int motor_pin_3, int motor_pin_4, int motor_pin_5,int enable_pin,
             float mechanicalAdvantage, float threadsPerMillimeter, 
             float syringeLinearVolumeRatio)
 {
@@ -118,6 +128,11 @@ Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
   // pin_count is used by the stepMotor() method:
   this->pin_count = 5;
 
+  // setup enable pin and enable the L293D
+  this->enable_pin = enable_pin;
+  pinMode(this->enable_pin, OUTPUT);
+  digitalWrite(this->enable_pin, HIGH);
+  
   // setup pump data
   this->mechanicalAdvantage = mechanicalAdvantage;
   this->threadsPerMillimeter = threadsPerMillimeter;
@@ -188,6 +203,9 @@ void Pump::step(long steps_to_move)
         stepMotor(this->step_number % 4);
     }
   }
+
+  // unlock (de-energize motor if necessary
+  if (UNLOCK) unlock();
 }
 
 /*
@@ -361,5 +379,26 @@ float Pump::DISTtoSTEPS(float distance)
   return distance * this->threadsPerMillimeter * this->mechanicalAdvantage * this->number_of_steps;
 }
 
+// release all coils to minimize current draw
+void Pump::unlock(void)
+{
+  digitalWrite(motor_pin_1, LOW);
+  digitalWrite(motor_pin_2, LOW);
+  digitalWrite(motor_pin_3, LOW);
+  digitalWrite(motor_pin_4, LOW);
+  this->step_number = 0;  
+}
 
+// Enables/disables L293D
+void Pump::enable(int val)
+{
+  // Enable L293D on 1, off for 0 or invalid value
+  if (val == 1) {
+    digitalWrite(enable_pin, HIGH);
+  }
+  else {
+    digitalWrite(enable_pin, LOW);
+  }
+  
+}
 

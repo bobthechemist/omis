@@ -38,6 +38,14 @@ int Pump::operate(String op, String arg){
     this->program();
     Serial.println("Finished program");
   }
+  else if (op == "un") {
+    Serial.println("Unlocking motor");
+    this->unlock();
+  }
+  else if (op == "en") {
+    Serial.println("Enable command.");
+    this->enable(arg.toInt());
+  }
   else {
     Serial.println("Invalid command");
     return 0;

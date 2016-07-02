@@ -6,6 +6,7 @@
 #define P2 11
 #define P3 10
 #define P4 9
+#define EN 13
 #define MA 15
 #define TPM 0.787
 #define LVR 13.0
@@ -14,7 +15,7 @@
 #define VERSION 0.2
 
 CommandParser cp;
-Pump pump1(STEPS, P1, P2, P3, P4, MA, TPM, LVR);
+Pump pump1(STEPS, P1, P2, P3, P4, EN, MA, TPM, LVR);
 
 void setup() {
   // Set up serial communications

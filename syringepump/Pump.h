@@ -8,21 +8,26 @@
 #ifndef Pump_h
 #define Pump_h
 
+// compile-time flags
+#define UNLOCK 1 // 1 unlock motor following a movement
+
 // library interface description
 class Pump {
   public:
     // constructors:
 
     Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
+                              int enable_pin,
                               float mechanicalAdvantage, float threadsPerMillimeter,
                               float syringeLinearVolumeRatio);
     Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
                               int motor_pin_3, int motor_pin_4,
+                              int enable_pin,
                               float mechanicalAdvantage, float threadsPerMillimeter,
                               float syringeLinearVolumeRatio);                                 
     Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
                               int motor_pin_3, int motor_pin_4,
-                              int motor_pin_5,
+                              int motor_pin_5, int enable_pin,
                               float mechanicalAdvantage, float threadsPerMillimeter,
                               float syringeLinearVolumeRatio);                                 
     
@@ -45,6 +50,11 @@ class Pump {
     // Probably private, but easier to make these public for the moment
     float minRPM = 1;
     float maxRPM = 40;
+
+    // release stepper coils
+    void unlock(void);
+    // Toggle L293D on/off
+    void enable(int val);
     
   private:
     void stepMotor(int this_step);
@@ -60,6 +70,9 @@ class Pump {
     int motor_pin_3;
     int motor_pin_4;
     int motor_pin_5;          // Only 5 phase motor
+
+    // Enable pin for L293D 
+    int enable_pin;
 
     unsigned long last_step_time; // time stamp in us of when the last step was taken
 
