@@ -11,3 +11,11 @@ The syringe pump consists of three design files (one for each of the components 
 
 There are currently two example millifluidic devices, one with side ports and one with top-face ports.  The side-port version uses cylindrical channels and the top-face port version uses rectangular channels.  These devices are designed with exploration in mind, while we identify best practices for 3D printed millifluidic device fabrication.
 
+### Change log
+
+**in development**
+----
+- Carved pieces from the syringe support on the idler in order to make gripping the upper part a bit easier
+
+- Starting to work through pieces and provide an option to minimize filament use.
+

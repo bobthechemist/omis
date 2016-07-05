@@ -1,7 +1,7 @@
 include <sp_global.scad>;
 use <MCAD/2dshapes.scad>;
 
-print_mode = true;
+print_mode = false;
 
 /* 
   Following 3 modules make a brace for the syringe(s).  The whole design
@@ -108,6 +108,14 @@ module idler(){
             translate(sa(-tol,
                 vp([-1/2,-1/2,0.715],baseDim)))
             cube(sa(2*tol,vp([1.,1.,0.285],baseDim)));
+            // Trim syring support to enhance gripping
+            for(i=[-25,20]){
+                translate([baseDim[x]/2,
+                  i, syringe[position][z]-tol])
+                cube([syringe[length]+tol,5,
+                syringe[thickness]+2*tol]);
+            }
+            
         }
     }
 }

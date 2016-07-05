@@ -71,4 +71,19 @@ if (print_mode) {
 else {
     carriage();
 }
-    
+ 
+
+// Attempt to (aesthetically?!?! clean up pieces and
+//  minimize filament useage.
+
+module filamentSaver(){
+    intersection(){
+        carriage();
+        translate([0,0,38])
+        scale([1,1,1.2])
+        rotate(90,[0,1,])
+        cylinder(d=50,h=25,center=true,$fn=100);}
+}
+
+
+
