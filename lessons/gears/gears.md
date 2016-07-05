@@ -1,4 +1,12 @@
 
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "All" } }
+});
+</script>
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 #An introduction to gears with the OMIS syringe pump
 ##Notes (to be deleted for production)
@@ -32,7 +40,7 @@ Before going further, it would be a good idea to [Watch an introductory video on
 
 Here is a view of the OMIS syringe pump gear train:
 
-![](omisgears.png)
+![](omisgears.PNG)
 
 The gear train consists of three gears: a *motor* gear that is attached to the stepper motor.  This is the gear that will drive the rest of the gear train.  The second gear is a *compound gear*. (We could also refer to this gear as an *idler*, but since that term is used for a different part of the syringe pump, I chose not to use it.) Note how it is actually a set of gears connected to one another.  Because they are connected, the two parts will always move at the same speed; however since the two parts have different numbers of teeth, they will interact with other gears differently.  When referring to the compound gear, I will specify if I am talking about the larger or smaller part.  Finally, there is the *driven* gear, which is the one that is connected to the threaded rod (or lead screw) that ultimately pushes the fluid out of the syringes.
 
