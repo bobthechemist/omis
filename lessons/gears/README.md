@@ -1,0 +1,2 @@
+#About this lesson
+Lessons are currently written using Markdown, which makes for easier rendering as HTML.  Mathematical equations in the lesson will not render properly in the Github viewer, and it is advised that end-users either use the HTML or the PDF version of the document unless you are comfortable with markdown.

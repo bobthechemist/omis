@@ -1,13 +1,3 @@
-
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  TeX: { equationNumbers: { autoNumber: "All" } }
-});
-</script>
-<script type="text/javascript"
-   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-
 #An introduction to gears with the OMIS syringe pump
 ##Notes (to be deleted for production)
 - what are gears?
@@ -71,11 +61,48 @@ A simpler form of equation \\eqref{eq:mainv} can be obtained by  cross multiplyi
 In the OMIS syringe pump, you can select motor speeds from 1 RPM (rotation per minute) to 40 RPM.  Using the above equations, determine the range of rotational speeds expected for the compound gear.  How will the speed of the load gear change if the mechanical advantage increases and the speed of the motor gear stays the same?  If you want to decrease the speed of the load gear but keep the motor gear speed the same, would you add or remove teeth to the load gear?
 
 ### working with gears
-We use gears to make life easier.  In physics, work is the force applied to an object multiplied by the distance traveled by the object as a result of that work.  If time is added to the picture (how much work is done during a given time frame) we have power.  
+We use gears to make life easier.  In physics, work is the force applied to an object multiplied by the distance traveled by the object as a result of that work.  If time is added to the picture (how much work is done during a given time frame) we have power. 
 
-When dealing with rotational motion, we use the term torque instead of force, but the idea is the same; work is the product of the torque applied to an object and the amount the object turns as a result of that torque.  Power, then is the product of the torque and angular velocity (in other words, RPMs) of the object.  
+\\begin{equation}
+	{work}={force}\\times{distance}
+	\\notag
+\\end{equation}
 
-In an ideal world, the power applied to a gear train is equal to the power exerted by the gear train.  (Pin = Pout).  If we substitute the power equation, we get (T1 w1 = T2 w2).  Notice that if we move all the w's to one side and all the T's to the other, we get T1/T2 = w2/w1.  We know from the previous section that w2/w1 is equal to 1/MA, so a bit more algebra and we get a relationship between the input and output torque T1*MA = T2.  
+\\begin{equation}
+	{power} = \\frac {work}{time}
+	\\notag
+\\end{equation} 
+
+When dealing with rotational motion, we use the term torque instead of force, but the idea is the same; work is the product of the torque applied to an object and the amount the object turns as a result of that torque.  Power, then, is the product of the torque and angular velocity (in other words, RPMs) of the object.  Well use the greek letter tau (\\(\\tau\\)) for torque and the greek letter omega (\\(\\omega\\)) for angular velocity.
+
+\\begin{equation}
+	P=\\tau\\times\\omega
+	\\label{eq:power}
+\\end{equation}
+
+In an ideal world, the power applied by the motor is equal to the power exerted by the gear train.  
+
+\\begin{equation}
+	P\_{motor} = P\_{load}
+	\\label{eq:power2}
+\\end{equation}
+
+
+If we substitute equation \\eqref{eq:power} into \\eqref{eq:power2} and rearrange to get all the torque values on one side and the angular velocity values on the other, the equation looks like this:
+
+\\begin{equation}
+	\\frac {\\tau\_{motor}}{\\tau\_{load}} = \\frac {\\omega\_{load}}{\\omega\_{motor}}
+	\\label{eq:tw}
+\\end{equation}
+
+Pay close attention to the right hand side of equation \\eqref{eq:tw}; it is the same as equation \\eqref{eq:mainv}.  Therefore, we can do another substitution of equation \\eqref{eq:mainv} into \\eqref{eq:tw} and do a little bit of rearranging to get a relationship between mechanical advantage and torque:
+
+\\begin{equation}
+	{MA} = \\frac {\\tau\_{load}}{\\tau\_{motor}}
+	\\label{eq:mat}
+\\end{equation}
+
+Now we have two very important relationships, equation \\eqref{eq:mat} and equation \\eqref{eq:ma}, that describe the relationships between torque, angular velocity and mechanical advantage.  Furthermore, all of these equations are based on the gear ratio, which depends on the relative number of teeth in the gears.  
 
 If the motor can apply a torque of 30 mM m (a typical value for this motor based on the datasheet and a unit conversion website), how much torque is exerted by the compound gear?
 
