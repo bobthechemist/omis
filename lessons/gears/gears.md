@@ -13,6 +13,8 @@
 - Equations needed
 	- gear ratios, pitch radius
 - some useful definitions with pictures [here](http://www.dsnell.co.uk/PS/wProSpur.html)
+- models, critical thinking questions and information
+
 
 I would like students to define some gear terminology, understand the concept of mechanical advantage, apply gear ratios to solve gear-based problems, analyze a gear train for the overall mechanical advantage, and create a gear train with specific constraints.
 
@@ -35,7 +37,7 @@ Here is a view of the OMIS syringe pump gear train:
 The gear train consists of three gears: a *motor* gear that is attached to the stepper motor.  This is the gear that will drive the rest of the gear train.  The second gear is a *compound gear*. (We could also refer to this gear as an *idler*, but since that term is used for a different part of the syringe pump, I chose not to use it.) Note how it is actually a set of gears connected to one another.  Because they are connected, the two parts will always move at the same speed; however since the two parts have different numbers of teeth, they will interact with other gears differently.  When referring to the compound gear, I will specify if I am talking about the larger or smaller part.  Finally, there is the *driven* gear, which is the one that is connected to the threaded rod (or lead screw) that ultimately pushes the fluid out of the syringes.
 
 
-To start, let's look at the first two gears in the OMIS syringe pump, the Motor and Compound gears.  How many teeth does the *motor gear* have?  How many are on the larger portion of the compound gear?  The gear ratio *n* can be calculated using
+To start, let's look at the first two gears in the OMIS syringe pump, the Motor and Compound gears.  How many teeth does the *motor gear* have?  How many are on the larger portion of the compound gear?  One of the most important properties of a set of gears is the gear ratio, which is the relative number of teeth on the two interacting (or meshing) gears.  The gear ratio *n* can be calculated using:
 
 \\begin{equation}
 	n = \frac {teeth\_{load}}{teeth\_{motor}}

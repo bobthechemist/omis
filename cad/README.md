@@ -19,3 +19,4 @@ There are currently two example millifluidic devices, one with side ports and on
 
 - Starting to work through pieces and provide an option to minimize filament use.
 
+- 161114: After a semester of use, it appears that the rod clamp attachment is a weak point and causes device failure (with both PLA and PETG).  Changed clamp to have a larger base attached to the substrate plate, which required that the support rods be moved farther apart from one another.

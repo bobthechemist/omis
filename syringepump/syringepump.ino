@@ -14,8 +14,21 @@
 
 #define VERSION 0.2
 
+// Shield interface (one pushbutton input, two LED outputs)
+const byte REDLED = 8;
+const byte BUTTON = A0;
+
 CommandParser cp;
 Pump pump1(STEPS, P1, P2, P3, P4, EN, MA, TPM, LVR);
+
+// Interrupt Service Routine (ISR)
+void switchPressed ()
+{
+  if (digitalRead (BUTTON) == HIGH)
+    digitalWrite (REDLED, LOW);
+  else
+    digitalWrite (REDLED, HIGH);
+}  // end of switchPressed
 
 void setup() {
   // Set up serial communications
@@ -27,6 +40,11 @@ void setup() {
   Serial.print("This is version ");
   Serial.print(VERSION);
   Serial.println(".");
+
+  // Shield interface and interrupt
+  pinMode (REDLED, OUTPUT);  // so we can update the LED
+  digitalWrite (BUTTON, HIGH);  // internal pull-up resistor
+  attachInterrupt (0, switchPressed, CHANGE);  // attach interrupt handler
 
   // Set an initial speed
   pump1.setSpeed(25);

@@ -60,13 +60,13 @@ trod = hw25;
 
 // Global design variables
 clampDim = [   12, 
-            srod[boltDiameter]+1.25*fast[nutDiameter], 
-            srod[boltDiameter] + 2];
+            srod[boltDiameter]+2.5*fast[nutDiameter], 
+            srod[boltDiameter] + 5];
 
 // Lead screw (or threaded rod) position should be fixed.
 trodPosition = [0,0,23];
 // Support rod positions are placed relative to the threaded rod.
-rodDisplacement = [0, 10, 9];
+rodDisplacement = [0, 15, 9];
 // Create the positive rod displacment, use vp([1,-1,1],rodPosition) 
 //   to get the other
 rodPosition = trodPosition + rodDisplacement;
@@ -97,7 +97,7 @@ module rodClamp(pos = 0.3,slot=.6,
 // rod_clamp will be considered a build up module    
     translate([rot==true?clampDim[x]:0,0,0])
     rotate(rot==true?180:0,[0,0,1])
-    translate([0,-0.70*clampDim[y],-0.5*clampDim[z]])
+    translate([0,-0.60*clampDim[y],-0.5*clampDim[z]])
     difference(){
         cube(clampDim);
         union(){
@@ -112,7 +112,7 @@ module rodClamp(pos = 0.3,slot=.6,
                 h=fastener[nutThickness]+tol,$fn=6);
             // slot
             translate([-tol,-tol,(clampDim[z]-slot)/2])
-            cube([clampDim[x]+2*tol,0.75*clampDim[y],slot]);
+            cube([clampDim[x]+2*tol,0.6*clampDim[y],slot]);
             // strain release
             // 0.6*rod_clamp_y is arbitrary, 
             //   and a mix between
