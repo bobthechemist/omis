@@ -8,8 +8,9 @@
 #ifndef Pump_h
 #define Pump_h
 
-// compile-time flags
-#define UNLOCK 1 // 1 unlock motor following a movement
+/* Made unlocking no longer optional */ 
+//#define UNLOCK 1 // 1 unlock motor following a movement
+
 
 // library interface description
 class Pump {
@@ -32,8 +33,6 @@ class Pump {
                               float syringeLinearVolumeRatio);                                 
     
     void setSpeed(float whatSpeed); // speed setter method:
-    void step(long number_of_steps); // mover method:
-    void turn(float revolutions); // mover method (with revolutions)
     int version(void);
     float debug(void);
 
@@ -43,13 +42,18 @@ class Pump {
     float DISTtoSTEPS(float distance); // find # steps to move plunger <distance> millimeters
     float RPMtoFR(float rpm); // convert (motor) RPM to a flow rate in uL/min
     
-    // Operate receives ops and args (typically from the command parser
+    // Operate receives ops and args (typically from the command parser)
     int operate(String op, String arg);
     void program(); // Test function to perform a set of commands (hard coded at the moment)
 
     // Probably private, but easier to make these public for the moment
     float minRPM = 1;
     float maxRPM = 40;
+
+    // Non-blocking motor movement
+    int stepBuffer = 0; // Number of steps that motor should take, should be private
+    void tryStep(void); // To place in loop to see if step should be taken
+    int addSteps(int); // Add steps to the step buffer, should be private
 
     // release stepper coils
     void unlock(void);

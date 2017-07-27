@@ -3,6 +3,9 @@
  * determining the validity of the syntax.
  */
 
+/* TODO
+ *  Reflect on how to appropriately handle multiple pumps.  Should the number of pumps be the purview of the command parser or the main loop?
+ */
 #ifndef CommandParser_h
 #define CommandParser_h
 
@@ -17,6 +20,7 @@ class CommandParser {
     void refresh(void); // Clears command and resets complete flag
     String operation;
     String argument;
+    int whichPump; // Indicates which pump the command parser is speaking to
 
   private:
     

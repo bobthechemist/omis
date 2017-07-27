@@ -2,41 +2,40 @@
 #include "Pump.h"
 
 int Pump::operate(String op, String arg){
-
   if      ( op == "ss" ) {
     float tmp = constrain(arg.toFloat(),this->minRPM, this->maxRPM);
-    Serial.print("Setting RPMs to: ");
-    Serial.println(tmp);
+    Serial.println("Setting RPMs to " + String(tmp) + ".");
     this->setSpeed(tmp);
   }
   else if ( op == "mv" ) {
-    Serial.print("Moving this many steps: ");
-    Serial.println(arg.toInt());
-    this->step(arg.toInt());
+    if(this->addSteps(arg.toInt())) {
+      Serial.println("Moving " + arg + " steps.");
+    }
   }
   else if ( op == "tu" ) {
-    Serial.print("Performing this many turns: ");
-    Serial.println(arg.toFloat());
-    this->turn(arg.toFloat());
+    if(this->addSteps( int(arg.toFloat() * this->number_of_steps ))) {
+      Serial.println("Performing " + arg + " turn(s).");
+    }
   }
   else if ( op == "sf" ) {
+    /* Add error msg if contrains are enforced on user input */
     float tmp = constrain(
       this->FRtoRPM(arg.toFloat()),
       this->minRPM,
       this->maxRPM);
-    Serial.print("Setting RPMs to: ");
-    Serial.println(tmp);
+    Serial.println("Flow rate: " + arg + " uL/min by setting RPMs to " + String(tmp) + ".");
     this->setSpeed(tmp);
   }
   else if ( op == "de" ) {
-    Serial.print("Delivering this many uL: ");
-    Serial.println(arg.toFloat());
-    this->step(VOLtoSTEPS(arg.toFloat()) );
+    if(this->addSteps( VOLtoSTEPS(arg.toFloat()))) {
+      Serial.println("Delivering " + arg + " uL.");
+    }
   }
   else if (op == "go") {
-    Serial.println("Starting program");
-    this->program();
-    Serial.println("Finished program");
+    Serial.println("I don't do this yet");
+    //Serial.println("Starting program");
+    //this->program();
+    //Serial.println("Finished program");
   }
   else if (op == "un") {
     Serial.println("Unlocking motor");

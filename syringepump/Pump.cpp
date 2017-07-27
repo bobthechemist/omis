@@ -9,6 +9,7 @@
  * - added syringe math (e.g. calculate number of steps needed to deliver a given volume.)
  * - added command structure
  * - changed `step` to accept long type
+ * - removed `step` and reaplced it with `tryStep`, a nonblocking version that accommodates moving multiple motors simultaneously
  */
 
 #include "Arduino.h"
@@ -95,6 +96,8 @@ Pump::Pump(int number_of_steps, int motor_pin_1, int motor_pin_2,
   this->mechanicalAdvantage = mechanicalAdvantage;
   this->threadsPerMillimeter = threadsPerMillimeter;
   this->syringeLinearVolumeRatio = syringeLinearVolumeRatio;
+
+  
 }
 
 /*
@@ -149,63 +152,66 @@ void Pump::setSpeed(float whatSpeed)
 }
 
 /*
- * Moves the motor a number of revolutions
- * Simply wraps `step` with the total number of steps
+ * Adds steps to the step buffer
  */
-void Pump::turn(float revolutions) {
-  this->step(int(revolutions * this->number_of_steps));
+int Pump::addSteps(int numSteps) {
+  /* Only add steps if the buffer is empty */
+  if (this -> stepBuffer == 0) {
+    this->stepBuffer = numSteps;
+    // Assign direction
+    (numSteps >= 0) ? this->direction = 1 : this->direction = -1 ;
+    return 1;
+  }
+  return 0; // Failed to add steps
 }
 
 /*
- * Moves the motor steps_to_move steps.  If the number is negative,
- * the motor moves in the reverse direction.
+ * Checks to see if a step should be made and does it.
  */
-void Pump::step(long steps_to_move)
+void Pump::tryStep()
 {
-  long steps_left = abs(steps_to_move);  // how many steps to take
-
-  // determine direction based on whether steps_to_mode is + or -:
-  if (steps_to_move > 0) { this->direction = 1; }
-  if (steps_to_move < 0) { this->direction = 0; }
-
-
-  // decrement the number of steps, moving one step each time:
-  while (steps_left > 0)
-  {
-    unsigned long now = micros();
-    // move only if the appropriate delay has passed:
-    if (now - this->last_step_time >= this->step_delay)
-    {
-      // get the timeStamp of when you stepped:
-      this->last_step_time = now;
-      // increment or decrement the step number,
-      // depending on direction:
-      if (this->direction == 1)
-      {
-        this->step_number++;
-        if (this->step_number == this->number_of_steps) {
-          this->step_number = 0;
-        }
-      }
-      else
-      {
-        if (this->step_number == 0) {
-          this->step_number = this->number_of_steps;
-        }
-        this->step_number--;
-      }
-      // decrement the steps left:
-      steps_left--;
-      // step the motor to step number 0, 1, ..., {3 or 10}
-      if (this->pin_count == 5)
-        stepMotor(this->step_number % 10);
-      else
-        stepMotor(this->step_number % 4);
-    }
+  // Return if there are no steps to take
+  if ( this->stepBuffer == 0) {
+      // unlock (de-energize motor if necessary
+    if (1) unlock(); 
+    return; 
   }
 
-  // unlock (de-energize motor if necessary
-  if (UNLOCK) unlock();
+  // decrement the number of steps and move one step:
+ 
+  unsigned long now = micros();
+  // move only if the appropriate delay has passed:
+  if (now - this->last_step_time >= this->step_delay)
+  {
+    // get the timeStamp of when you stepped:
+    this->last_step_time = now;
+    // increment or decrement the step number,
+    // depending on direction:
+    if (this->direction == 1)
+    {
+     this->step_number++;
+      if (this->step_number == this->number_of_steps) {
+        this->step_number = 0;
+      }
+    }
+    else
+    {
+      if (this->step_number == 0) {
+        this->step_number = this->number_of_steps;
+      }
+      this->step_number--;
+    }
+    // decrement the steps left:
+    this->stepBuffer -= this->direction;
+    
+    // step the motor to step number 0, 1, ..., {3 or 10}
+    if (this->pin_count == 5)
+      stepMotor(this->step_number % 10);
+    else
+      stepMotor(this->step_number % 4);
+  }
+
+
 }
 
 /*
@@ -343,7 +349,7 @@ void Pump::stepMotor(int thisStep)
 */
 int Pump::version(void)
 {
-  return 1;
+  return 2;
 }
 
 // Debugging
