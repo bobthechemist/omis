@@ -1,5 +1,7 @@
 # Arduino sketch and schematic
 
+**TODO: Revise two sections below to account for two drivers and the pins to enable/disable the stepper motors**
+
 ## Electronics
 
 The breadboard layout, shown below, is identical to the one described in the [Adafruit tutorial on stepper motors](https://learn.adafruit.com/adafruit-arduino-lesson-16-stepper-motors/parts?view=all).  That tutorial is a prerequisite to building the electronics/software side of OMIS.  

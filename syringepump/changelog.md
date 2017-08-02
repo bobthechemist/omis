@@ -6,3 +6,9 @@
 
 ## Version 0.1
 First public version.  Rudimentary command structure, hard-coded scripting option, serial communication, customized stepper motor library
+
+## Version 0.2 
+No idea - didn't record anything
+
+## Version 0.3
+First implementation of a non-blocking stepper driver code that allows for two stepper motors to be operated simultaneously.
