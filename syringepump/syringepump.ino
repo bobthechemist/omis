@@ -25,7 +25,7 @@
 #define LVR1 13.0
 #define STEPS1 513
 
-#define VERSION 0.3
+#define VERSION 0.31
 
 // Reserve digital pins 2/3 for interrupts and A0/A1 for LED outputs
 // See https://www.arduino.cc/en/Reference/AttachInterrupt
@@ -61,7 +61,7 @@ void button2Pressed ()
 void setup() {
   // Set up serial communications
   // TODO go faster with serial
-  Serial.begin(9600);
+  Serial.begin(115200);
   while(!Serial) {
     ; //Wait for connect
   }

@@ -42,10 +42,8 @@ class Pump {
     float DISTtoSTEPS(float distance); // find # steps to move plunger <distance> millimeters
     float RPMtoFR(float rpm); // convert (motor) RPM to a flow rate in uL/min
 
-    /* TODO: remove program() as this will be controlled by end-user software */
     // Operate receives ops and args (typically from the command parser)
     int operate(String op, String arg);
-    void program(); // Test function to perform a set of commands (hard coded at the moment)
 
     /* TODO: make private and add functions to access */
     // Probably private, but easier to make these public for the moment
