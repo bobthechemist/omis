@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "Pump.h"
 
+// TODO: Consider switch case
 int Pump::operate(String op, String arg){
   if      ( op == "ss" ) {
     float tmp = constrain(arg.toFloat(),this->minRPM, this->maxRPM);
@@ -42,7 +43,12 @@ int Pump::operate(String op, String arg){
     this->unlock();
   }
   else if (op == "en") {
-    Serial.println("Enable command.");
+    if(arg.toInt()==1) {
+      Serial.println("Enabling pump.");
+    }
+    else {
+      Serial.println("Disabling pump");
+    }
     this->enable(arg.toInt());
   }
   else {

@@ -27,44 +27,57 @@
 
 #define VERSION 0.3
 
-// Shield interface (one pushbutton input, two LED outputs)
-//const byte REDLED = 8;
-//const byte BUTTON = A0;
+// Reserve digital pins 2/3 for interrupts and A0/A1 for LED outputs
+// See https://www.arduino.cc/en/Reference/AttachInterrupt
+const byte BUTTON1 = 2; // why not #define?
+volatile byte button1State = LOW;
+const byte BUTTON2 = 3;
+volatile byte button2State = LOW;
+const byte REDLED = A0;
+const byte GREENLED = A1;
 
 CommandParser cp;
 
 Pump pump[] { 
-  Pump(STEPS1, P11, P12, P13, P14, EN1, MA1, TPM1, LVR1),
-  Pump(STEPS0, P01, P02, P03, P04, EN0, MA0, TPM0, LVR0)
+  Pump(STEPS0, P01, P02, P03, P04, EN0, MA0, TPM0, LVR0),
+  Pump(STEPS1, P11, P12, P13, P14, EN1, MA1, TPM1, LVR1)
 };
 
-
+/*
+ * TODO: Add support for user interaction (e.g. trigger button)
+ */
 // Interrupt Service Routine (ISR)
 /*
-void switchPressed ()
+void button1Pressed ()
 {
-  if (digitalRead (BUTTON) == HIGH)
-    digitalWrite (REDLED, LOW);
-  else
-    digitalWrite (REDLED, HIGH);
-}  // end of switchPressed
+  button1State != button1State;
+}  
+void button2Pressed ()
+{
+  button2State != button2State;
+} 
 */
 
 void setup() {
   // Set up serial communications
+  // TODO go faster with serial
   Serial.begin(9600);
   while(!Serial) {
     ; //Wait for connect
   }
   Serial.println("Syringe pump communications established");
-  Serial.print("This is version ");
-  Serial.print(VERSION);
-  Serial.println(".");
+  Serial.println("This is version " + String(VERSION) + ".");
 
-  // Shield interface and interrupt **INTERFERES WITH 2ND H-BRIDGE**
-  //pinMode (REDLED, OUTPUT);  // so we can update the LED
-  //digitalWrite (BUTTON, HIGH);  // internal pull-up resistor
-  //attachInterrupt (0, switchPressed, CHANGE);  // attach interrupt handler
+
+  // Setup hardware interface components
+  pinMode (REDLED, OUTPUT);  
+  pinMode (GREENLED, OUTPUT);  
+  digitalWrite(BUTTON1, INPUT_PULLUP); // internal pull-up resistor
+  digitalWrite(BUTTON2, INPUT_PULLUP); 
+  /* Not implemented
+   * attachInterrupt (digitalPinToInterrupt(BUTTON1, button1Pressed , CHANGE);  // attach interrupt handler 
+   * attachInterrupt (digitalPinToInterrupt(BUTTON2, button2Pressed , CHANGE);  // attach interrupt handler
+   */
 
   // Set the initial pump as pump(0)
   cp.whichPump = 0;
@@ -75,6 +88,7 @@ void setup() {
     pump[i].setSpeed(25);
   }
 
+
 }
 
 void loop() {
@@ -82,6 +96,7 @@ void loop() {
   //   ready for parsing and that the user input follows the basic structure of a command.
   if(cp.validate()){
     cp.parse();
+    // "sp" is a global command to switch operations to a different pump
     if(cp.operation == "sp") {
       if ( (cp.argument.toInt() < 0) || (cp.argument.toInt() >= NPUMPS) ) {
         Serial.println("Error! Default to pump #0");

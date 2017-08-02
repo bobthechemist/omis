@@ -12,6 +12,10 @@
  * - removed `step` and reaplced it with `tryStep`, a nonblocking version that accommodates moving multiple motors simultaneously
  */
 
+/* TODO:
+ *  - Noticed that changes might require TWO uploads in order to take effect.  Not sure why or under what conditions.
+ */
+ 
 #include "Arduino.h"
 #include "Pump.h"
 
