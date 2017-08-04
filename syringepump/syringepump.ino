@@ -31,8 +31,6 @@
 // See https://www.arduino.cc/en/Reference/AttachInterrupt
 const byte BUTTON1 = 2; // why not #define?
 volatile byte button1State = LOW;
-const byte BUTTON2 = 3;
-volatile byte button2State = LOW;
 const byte REDLED = A0;
 const byte GREENLED = A1;
 
@@ -47,16 +45,12 @@ Pump pump[] {
  * TODO: Add support for user interaction (e.g. trigger button)
  */
 // Interrupt Service Routine (ISR)
-/*
+
 void button1Pressed ()
 {
-  button1State != button1State;
+  button1State = !button1State;
 }  
-void button2Pressed ()
-{
-  button2State != button2State;
-} 
-*/
+
 
 void setup() {
   // Set up serial communications
@@ -72,12 +66,10 @@ void setup() {
   // Setup hardware interface components
   pinMode (REDLED, OUTPUT);  
   pinMode (GREENLED, OUTPUT);  
-  digitalWrite(BUTTON1, INPUT_PULLUP); // internal pull-up resistor
-  digitalWrite(BUTTON2, INPUT_PULLUP); 
-  /* Not implemented
-   * attachInterrupt (digitalPinToInterrupt(BUTTON1, button1Pressed , CHANGE);  // attach interrupt handler 
-   * attachInterrupt (digitalPinToInterrupt(BUTTON2, button2Pressed , CHANGE);  // attach interrupt handler
-   */
+  pinMode(BUTTON1, INPUT_PULLUP); // internal pull-up resistor
+  
+  attachInterrupt (digitalPinToInterrupt(BUTTON1), button1Pressed , CHANGE);  // attach interrupt handler 
+
 
   // Set the initial pump as pump(0)
   cp.whichPump = 0;
@@ -88,7 +80,8 @@ void setup() {
     pump[i].setSpeed(25);
   }
 
-
+  /* SETUP TEST AREA -sta */
+  
 }
 
 void loop() {
@@ -119,6 +112,8 @@ void loop() {
     pump[i].tryStep();
   }
 
+  /* LOOP TEST AREA -lta */
+  digitalWrite(REDLED, !button1State);
 }
 
 // Using serial events for capturing user requests
