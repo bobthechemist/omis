@@ -25,7 +25,7 @@
 #define LVR1 13.0
 #define STEPS1 513
 
-#define VERSION 0.31
+#define VERSION 0.32
 
 // Reserve digital pins 2/3 for interrupts and A0/A1 for LED outputs
 // See https://www.arduino.cc/en/Reference/AttachInterrupt
@@ -33,6 +33,9 @@ const byte BUTTON1 = 2; // why not #define?
 volatile byte button1State = LOW;
 const byte REDLED = A0;
 const byte GREENLED = A1;
+
+// Reserve analog pin A5 for sensor (possibly more in the future)
+const byte SENSOR0 = A5;
 
 CommandParser cp;
 
@@ -50,7 +53,12 @@ void button1Pressed ()
 {
   button1State = !button1State;
 }  
-
+/*
+ * void button2Pressed ()
+{
+  button2State != button2State;
+} 
+*/
 
 void setup() {
   // Set up serial communications
@@ -66,11 +74,10 @@ void setup() {
   // Setup hardware interface components
   pinMode (REDLED, OUTPUT);  
   pinMode (GREENLED, OUTPUT);  
-  pinMode(BUTTON1, INPUT_PULLUP); // internal pull-up resistor
-  
+  pinMode (BUTTON1, INPUT_PULLUP); // internal pull-up resistor
+ 
   attachInterrupt (digitalPinToInterrupt(BUTTON1), button1Pressed , CHANGE);  // attach interrupt handler 
-
-
+ 
   // Set the initial pump as pump(0)
   cp.whichPump = 0;
   Serial.println("Controlling pump #0");
@@ -80,8 +87,9 @@ void setup() {
     pump[i].setSpeed(25);
   }
 
-  /* SETUP TEST AREA -sta */
-  
+  // Set sensor pin(s)
+  pinMode (SENSOR0, INPUT);
+
 }
 
 void loop() {
@@ -100,6 +108,10 @@ void loop() {
         Serial.println("Controlling pump #" + cp.argument);
       }
     }
+    // "re" is a global command to read from the sensor pin(s)
+    else if(cp.operation == "re") {
+      Serial.println(analogRead(SENSOR0));
+    }
     else {
       pump[cp.whichPump].operate(cp.operation, cp.argument);
 
@@ -112,8 +124,7 @@ void loop() {
     pump[i].tryStep();
   }
 
-  /* LOOP TEST AREA -lta */
-  digitalWrite(REDLED, !button1State);
+  digitalWrite(GREENLED, !button1State);
 }
 
 // Using serial events for capturing user requests
