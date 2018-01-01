@@ -18,7 +18,7 @@ $listenTask = Null;
 listen[] := Module[{temp},
 	If[$arduino =!= Null,
 		Pause[$pauseLength];
-    (* Read the ASCII characters from the serial buffer, delete linefeeds and convert to a string *)
+        (* Read the ASCII characters from the serial buffer, delete linefeeds and convert to a string *)
 		temp = StringJoin[FromCharacterCode /@ 
       DeleteCases[DeviceReadBuffer[$arduino],10]];
       (* If string, remove the linefeed *)
@@ -29,7 +29,8 @@ listen[] := Module[{temp},
     $arduinoMessage[Now] = temp]];
   ];
 ]
-
+(* :BUG: First command in session sent after the connect will fail.  Subsequent commands work as expected.
+         This bug seems to only happen if the reset button is not pressed after making connection. *)
 connect[port_String]:=Module[{},
 	$arduino = DeviceOpen["Serial",{port, "BaudRate"-> 115200}];
 	$arduinoMessage[Now] = "Connected. Press reset on Arduino.";
@@ -38,7 +39,8 @@ connect[port_String]:=Module[{},
 
 disconnect[]:=Module[{},
 	$arduinoMessage[Now] = "Closing...";
-	If[$listenTask =!= Null, RemoveScheduledTask@$listenTask];
+	(*If[$listenTask =!= Null, RemoveScheduledTask@$listenTask];*)
+	Quiet@RemoveScheduledTask@$listenTask;
 	$listenTask = Null;
 	If[$arduino =!= Null, DeviceClose[$arduino]];
 	$arduino = Null;
@@ -55,7 +57,8 @@ sendCommand[command_String]:=Module[{},
 	]
 ]	
 				
-simpleInterface[port_String] := DynamicModule[{whichPump="0", op="tu", value="1", size = 300},Column[{
+simpleInterface[port_String] := CreatePalette[
+DynamicModule[{whichPump="0", op="tu", value="1", size = 300},Column[{
 	Row[{
 		Button["Connect",connect[port],Method->"Queued"],
 		Button["Disconnect",disconnect[],Method->"Queued"]
@@ -90,7 +93,8 @@ simpleInterface[port_String] := DynamicModule[{whichPump="0", op="tu", value="1"
       AppearanceElements -> None]
   ],
   Dynamic@If[Length@$arduinoData>0,DateListPlot[$arduinoData,AspectRatio->1/4,ImageSize->{310,Automatic}],"Waiting..."]
-}]]
+}]], Saveable->False, WindowTitle->"OMIS Pump Control"]
+
 
 (* A visual representation of what was done, when *)
 showTimeline[]:= TimelinePlot@AssociationMap[Reverse,$arduinoMessage];
@@ -122,6 +126,13 @@ continuousVariation[totalFlowRate_, minFlowRate_, numRatios_, time_] :=
   Table[{sendCommand /@ i, Pause[time + communicationDelay]}, {i, 
     commandSequence}];
   $arduinoMessage[Now] = Style["Sequence complete", Blue];
+]
+
+findConnection[]:= Module[{},
+	If[StringContainsQ[$System,"Microsoft"],
+		(Print["Open the Ports tab and note the COM value for Arduino."];
+		<<"!control.exe /name Microsoft.DeviceManager";)
+	]
 ]
 
 EndPackage[];
