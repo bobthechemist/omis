@@ -11,7 +11,7 @@
 #define EN0 13
 #define MA0 15
 #define TPM0 0.787
-#define LVR0 13.0
+#define LVR0 14.04 // 5mm glass syringe, 3mm plastic is 13.
 #define STEPS0 513
 
 /* PUMP 1 */
@@ -22,7 +22,7 @@
 #define EN1 4
 #define MA1 15
 #define TPM1 0.787
-#define LVR1 13.0
+#define LVR1 14.04
 #define STEPS1 513
 
 #define VERSION 0.32

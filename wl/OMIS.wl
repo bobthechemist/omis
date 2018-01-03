@@ -93,7 +93,8 @@ DynamicModule[{whichPump="0", op="tu", value="1", size = 300},Column[{
       AppearanceElements -> None]
   ],
   Dynamic@If[Length@$arduinoData>0,DateListPlot[$arduinoData,AspectRatio->1/4,ImageSize->{310,Automatic}],"Waiting..."]
-}]], Saveable->False, WindowTitle->"OMIS Pump Control"]
+}]],  WindowTitle->"OMIS Pump Control",WindowFloating -> False,
+WindowClickSelect -> True,Saveable->False]
 
 
 (* A visual representation of what was done, when *)

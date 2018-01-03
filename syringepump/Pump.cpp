@@ -158,7 +158,7 @@ void Pump::setSpeed(float whatSpeed)
 /*
  * Adds steps to the step buffer
  */
-int Pump::addSteps(int numSteps) {
+long Pump::addSteps(long numSteps) {
   /* Only add steps if the buffer is empty */
   if (this -> stepBuffer == 0) {
     this->stepBuffer = numSteps;

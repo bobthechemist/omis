@@ -1,0 +1,2497 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    113631,       2489]
+NotebookOptionsPosition[    110004,       2426]
+NotebookOutlinePosition[    110351,       2441]
+CellTagsIndexPosition[    110308,       2438]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Controlling OMIS pump from Wolfram Mathematica", "Section",
+ CellChangeTimes->{{3.7238327207519255`*^9, 
+  3.723832730601509*^9}},ExpressionUUID->"72e2e01e-b595-40f2-9d23-\
+400acc8500e9"],
+
+Cell[CellGroupData[{
+
+Cell["Obtaining the package", "Subsubsection",
+ CellChangeTimes->{{3.7238327433810635`*^9, 
+  3.723832747377251*^9}},ExpressionUUID->"da42a49d-ab34-49f5-b0d6-\
+13803e625a12"],
+
+Cell["\<\
+If you do not have the latest version of the OMIS` package, it can be \
+obtained by executing the code below.  Your computer must have an active \
+internet connection for this to work.\
+\>", "Text",
+ CellChangeTimes->{{3.723832749851905*^9, 
+  3.72383279617093*^9}},ExpressionUUID->"3861f2ba-8aa8-4976-b46d-\
+f2ccaaed8296"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "url", " ", "=", " ", 
+   "\"\<https://raw.githubusercontent.com/bobthechemist/omis/develop/wl/OMIS.\
+wl\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Get", "@", "url"}]}], "Input",
+ CellChangeTimes->{{3.723832673547098*^9, 3.723832680845521*^9}, {
+  3.72383280445428*^9, 
+  3.723832808955802*^9}},ExpressionUUID->"34a63fe8-d496-41f9-8fab-\
+342093105e9c"],
+
+Cell[TextData[{
+ StyleBox["Note",
+  FontWeight->"Bold"],
+ ": As of this writing, the latest functional code is in the ",
+ StyleBox["develop",
+  FontSlant->"Italic"],
+ " branch.  Should you be asked to use a different branch at some point, \
+replace \[OpenCurlyDoubleQuote]develop\[CloseCurlyDoubleQuote] in the string \
+above with the appropriate branch name.\n\nIf you wish to save a local copy \
+of the OMIS` package, update the filename below and execute the cell."
+}], "Text",
+ CellChangeTimes->{{3.723832822962179*^9, 3.7238328551259375`*^9}, {
+  3.723833159133711*^9, 3.723833184995634*^9}, {3.723835089513059*^9, 
+  3.7238351176191616`*^9}},ExpressionUUID->"c0e3bf91-9863-40fc-a19a-\
+89685180ab6c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\<c:\\\\users\\\\bob\\\\Desktop\\\\temp\\\\junk.wl\>\"", ",", 
+   RowBox[{"Import", "[", 
+    RowBox[{"url", ",", "\"\<String\>\""}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.723833210237842*^9, 
+  3.723833269211871*^9}},ExpressionUUID->"2d9df925-af5d-43ec-a339-\
+30e67a4e1b05"],
+
+Cell[BoxData["\<\"c:\\\\users\\\\bob\\\\Desktop\\\\temp\\\\junk.wl\"\>"], \
+"Output",
+ CellChangeTimes->{{3.723833214513785*^9, 3.723833243998314*^9}, 
+   3.7238332763411517`*^9, 
+   3.723835190455736*^9},ExpressionUUID->"c310166b-a215-4943-b0af-\
+b94f834a0219"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Establishing a connection and sending commands", "Subsubsection",
+ CellChangeTimes->{{3.723835235801276*^9, 3.7238352392866306`*^9}, {
+  3.723835370360343*^9, 
+  3.7238353726223783`*^9}},ExpressionUUID->"c148478f-4dd2-453c-a241-\
+51cf23edd273"],
+
+Cell["\<\
+You need to know the name of the communications port that the OMIS controller \
+has been assigned.  You may use the following function to assist.  It has \
+only been tested on Windows.  Update the value of `port` when you have found \
+the correct value.\
+\>", "Text",
+ CellChangeTimes->{{3.723835248202684*^9, 
+  3.723835357765721*^9}},ExpressionUUID->"d66ed02d-6932-4e84-afa4-\
+157d0037d443"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"findConnection", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.723799346943263*^9, 
+  3.723799348496092*^9}},ExpressionUUID->"bd54b3fc-82f2-4420-9a11-\
+c5877f04ced9"],
+
+Cell[BoxData["\<\"Open the Ports tab and note the COM value for \
+Arduino.\"\>"], "Print",
+ CellChangeTimes->{3.7237993489224453`*^9, 3.723830383603419*^9, 
+  3.723832703990156*^9, 
+  3.7238353034612308`*^9},ExpressionUUID->"42da26bc-616b-4a42-8f6a-\
+9952f3662a88"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"port", " ", "=", " ", "\"\<COM5\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.7238353120670524`*^9, 
+  3.7238353162464075`*^9}},ExpressionUUID->"b54de3d9-9948-41f0-bc86-\
+fbe1f5d10d25"],
+
+Cell["\<\
+To connect, use the `connect` command, which accepts as an argument the port \
+name.\
+\>", "Text",
+ CellChangeTimes->{{3.7238353794334946`*^9, 
+  3.723835397562855*^9}},ExpressionUUID->"417c8f93-3a42-4305-959d-\
+3d1cae64c4e1"],
+
+Cell[BoxData[
+ RowBox[{"connect", "[", "port", "]"}]], "Input",
+ CellChangeTimes->{{3.723830397500225*^9, 3.72383040621916*^9}, {
+  3.7238354014481144`*^9, 
+  3.72383540193394*^9}},ExpressionUUID->"dc6822dc-25c6-46e1-8f7f-\
+8a06ce9eb731"],
+
+Cell["\<\
+You should press the reset button on the OMIS controller before continuing.  \
+Commands are sent using `sendCommand`.  For example, to turn the pump one \
+full revolution:\
+\>", "Text",
+ CellChangeTimes->{{3.7238354372955947`*^9, 
+  3.723835484405093*^9}},ExpressionUUID->"fb9f49d5-39aa-4c92-9d42-\
+83de10bbb880"],
+
+Cell[BoxData[
+ RowBox[{"sendCommand", "[", "\"\<tu 0.5\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.723830408970026*^9, 3.7238304213153296`*^9}, {
+  3.7238355543684464`*^9, 
+  3.7238355549508853`*^9}},ExpressionUUID->"d6a311ac-58fb-46f9-84fc-\
+1f0c009e97de"],
+
+Cell["\<\
+All commands are two letters, followed by a space and a numeric value.  The \
+list of commands includes the following:
+
+tu: Turn the motor in units of complete revolutions.  Accepts decimal values
+ss: set the speed (RPMs) of the motor.  Max value is 40.  Accepts decimal \
+values
+mv: Move a given number of steps.  The standard motor has 513 steps for one \
+full revolution.  Integers only.
+sf: Set flow rate in uL/min.  Adjusts the RPMs based on an experimentally \
+meaningful value.
+de: deliver volume in microliters.  Sets the number of steps based on an \
+experimentally meaningful value.
+
+Two special commands are pump-independent
+
+sp: set pump.  Values are 0 or 1 for the first or second pump.
+re: Read sensor. Returns a value between 0 and 1023 corresponding to the \
+analog sensor on the OMIS controller
+
+For commands such as re, which don\[CloseCurlyQuote]t require a number, one \
+must still be given.  It is ignored.  
+
+The end user can operate the OMIS pumps without knowing the commands using \
+the simple interface.\
+\>", "Text",
+ CellChangeTimes->{{3.723835501230429*^9, 3.723835623249485*^9}, {
+  3.723835918653617*^9, 3.7238359387552824`*^9}, {3.7238360005143337`*^9, 
+  3.7238362653487215`*^9}},ExpressionUUID->"833997ad-7baf-43c8-96ac-\
+6ef4075f145b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"simpleInterface", "@", "port"}], ";"}]], "Input",
+ CellChangeTimes->{{3.7238309093195195`*^9, 3.723830911690136*^9}, {
+   3.7238355699895267`*^9, 3.7238355729932814`*^9}, 
+   3.723835660508037*^9},ExpressionUUID->"ce4a67ee-188a-4ce6-96ed-\
+83f211af687e"],
+
+Cell["\<\
+The interface also provides a log of the commands sent to the OMIS \
+controller.  If read commands are executed, then a graph of the data will be \
+presented.\
+\>", "Text",
+ CellChangeTimes->{{3.723836278407565*^9, 
+  3.7238363377729073`*^9}},ExpressionUUID->"a96e6e47-5186-452d-84c8-\
+c92bb513d8a4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Fun things", "Subsubsection",
+ CellChangeTimes->{{3.723836345615206*^9, 
+  3.7238363467929907`*^9}},ExpressionUUID->"1b804b3e-7812-44cb-ac60-\
+8e63f6bf097b"],
+
+Cell["\<\
+The commands sent to OMIS controller can be visualized graphically. \
+\>", "Text",
+ CellChangeTimes->{{3.7238363844126735`*^9, 3.7238364012580843`*^9}, {
+  3.723836762327957*^9, 
+  3.723836772655547*^9}},ExpressionUUID->"19ced4bf-c3f5-41a0-aa7e-\
+464734c62dd0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"showTimeline", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.72383641348083*^9, 
+  3.723836416275197*^9}},ExpressionUUID->"f6b1d797-66ce-42ee-bd08-\
+a23ceb993ca3"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {AbsolutePointSize[0], Opacity[0], 
+    PointBox[NCache[{{3.7238186178102134`17.32356340716651*^9, 0}, {
+       3.7238187149571146`17.323563481229552*^9, Rational[369, 20]}}, {{
+       3.7238186178102136`*^9, 0}, {3.7238187149571147`*^9, 18.45}}]], 
+    PointBox[NCache[{{
+       3.7238186178102134`17.32356340716651*^9, Rational[-1, 2]}, {
+       3.7238187149571146`17.323563481229552*^9, 0}}, {{
+       3.7238186178102136`*^9, -0.5}, {3.7238187149571147`*^9, 0}}]]}, {}, {
+    {PointSize[0], Opacity[0], 
+     PointBox[NCache[{{3.7238186178102134`17.32356340716651*^9, 0}, {
+        3.723818767496202*^9, Rational[359, 20]}}, {{
+        3.7238186178102136`*^9, 0}, {3.723818767496202*^9, 17.95}}]]}, {
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238187149571147`*^9, 0}, {
+                3.7238187149571147`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[201, 40]}], 
+                Offset[{15, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[201, 40]}], 
+                Offset[{15, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[3, 2]}], {3.7238187149571146`17.323563481229552*^9, 
+                 Rational[3, 2]}, {
+                3.7238187149571146`17.323563481229552*^9, 0}}, {
+                Offset[{25, 0}, {3.723818714156077*^9, 5.025}], 
+                Offset[{15, 0}, {3.723818714156077*^9, 5.025}], 
+                Offset[{15, 0}, {3.723818714156077*^9, 1.5}], {
+                3.7238187149571147`*^9, 1.5}, {3.7238187149571147`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{25, 5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[201, 40]}], 
+                Offset[{20, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[201, 40]}], 
+                Offset[{25, -5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[201, 40]}]}, {
+                Offset[{25, 5}, {3.723818714156077*^9, 5.025}], 
+                Offset[{20, 0}, {3.723818714156077*^9, 5.025}], 
+                Offset[{25, -5}, {3.723818714156077*^9, 5.025}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"ump #0\\rPerforming 2 turn(s).\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[201, 40]}], 
+               Offset[{25, 0}, {3.723818714156077*^9, 5.025}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[87, 20]}], 
+               Offset[{0, 0}, {3.723818714156077*^9, 4.35}]], 
+              NCache[
+               Offset[{0, 0}, {3.723818743455582*^9, 
+                 Rational[57, 10]}], 
+               Offset[{0, 0}, {3.723818743455582*^9, 5.7}]]]}}}},
+         ImageSizeCache->{{375.2929275009046, 513.7715408828844}, {
+          46.45566844451143, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:05:14\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "5", ",", 
+                    "14.9571146`8.927422772166059"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 5, 14.9571146`8.927422772166059}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238187141780925`*^9, 0}, {
+                3.7238187141780925`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[59, 8]}], 
+                Offset[{10, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[59, 8]}], 
+                
+                Offset[{10, 0}, {
+                 3.7238187141560771`17.323563481136134*^9, 1}], {
+                3.7238187141780925`17.3235634811387*^9, 1}, {
+                3.7238187141780925`17.3235634811387*^9, 0}}, {
+                Offset[{25, 0}, {3.723818714156077*^9, 7.375}], 
+                Offset[{10, 0}, {3.723818714156077*^9, 7.375}], 
+                Offset[{10, 0}, {3.723818714156077*^9, 1}], {
+                3.7238187141780925`*^9, 1}, {3.7238187141780925`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{25, 5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[59, 8]}], 
+                Offset[{20, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[59, 8]}], 
+                Offset[{25, -5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[59, 8]}]}, {
+                Offset[{25, 5}, {3.723818714156077*^9, 7.375}], 
+                Offset[{20, 0}, {3.723818714156077*^9, 7.375}], 
+                Offset[{25, -5}, {3.723818714156077*^9, 7.375}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox[
+                 "\"Setting RPMs to 20.00.\\rPerforming 4 \
+turn(s).\\rControlling \"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[59, 8]}], 
+               Offset[{25, 0}, {3.723818714156077*^9, 7.375}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[67, 10]}], 
+               Offset[{0, 0}, {3.723818714156077*^9, 6.7}]], 
+              NCache[
+               Offset[{0, 0}, {3.723818767496202*^9, 
+                 Rational[161, 20]}], 
+               Offset[{0, 0}, {3.723818767496202*^9, 8.05}]]]}}}},
+         ImageSizeCache->{{374.7606933090101, 
+          577.8193027999987}, {-3.7837727027333585`, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:05:14\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "5", ",", 
+                    "14.1780925`8.90419275640207"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 5, 14.1780925`8.90419275640207}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238187141685886`*^9, 0}, {
+                3.7238187141685886`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[389, 40]}], 
+                Offset[{5, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[389, 40]}], 
+                Offset[{5, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[1, 2]}], {3.7238187141685887`17.323563481137594*^9, 
+                 Rational[1, 2]}, {
+                3.7238187141685887`17.323563481137594*^9, 0}}, {
+                Offset[{25, 0}, {3.723818714156077*^9, 9.725}], 
+                Offset[{5, 0}, {3.723818714156077*^9, 9.725}], 
+                Offset[{5, 0}, {3.723818714156077*^9, 0.5}], {
+                3.7238187141685886`*^9, 0.5}, {3.7238187141685886`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{25, 5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[389, 40]}], 
+                Offset[{20, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[389, 40]}], 
+                Offset[{25, -5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[389, 40]}]}, {
+                Offset[{25, 5}, {3.723818714156077*^9, 9.725}], 
+                Offset[{20, 0}, {3.723818714156077*^9, 9.725}], 
+                Offset[{25, -5}, {3.723818714156077*^9, 9.725}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"Setting RPMs to 10.00.\\rControlling pump #1\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[389, 40]}], 
+               Offset[{25, 0}, {3.723818714156077*^9, 9.725}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[181, 20]}], 
+               Offset[{0, 0}, {3.723818714156077*^9, 9.05}]], 
+              NCache[
+               Offset[{0, 0}, {3.723818757541883*^9, 
+                 Rational[52, 5]}], 
+               Offset[{0, 0}, {3.723818757541883*^9, 10.4}]]]}}}},
+         ImageSizeCache->{{374.7606933090101, 
+          541.2329266098131}, {-37.02321384997816, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:05:14\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "5", ",", 
+                    "14.1685887`8.903901544318181"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 5, 14.1685887`8.903901544318181}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.723818714156077*^9, 0}, {
+                3.723818714156077*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[483, 40]}], 
+                Offset[{0, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[483, 40]}], 
+                
+                Offset[{0, 0}, {
+                 3.7238187141560771`17.323563481136134*^9, 3}], {
+                3.7238187141560771`17.323563481136134*^9, 3}, {
+                3.7238187141560771`17.323563481136134*^9, 0}}, {
+                Offset[{25, 0}, {3.723818714156077*^9, 12.075}], 
+                Offset[{0, 0}, {3.723818714156077*^9, 12.075}], 
+                Offset[{0, 0}, {3.723818714156077*^9, 3}], {
+                3.723818714156077*^9, 3}, {3.723818714156077*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{25, 5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[483, 40]}], 
+                Offset[{20, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[483, 40]}], 
+                Offset[{25, -5}, {3.7238187141560771`17.323563481136134*^9, 
+                  Rational[483, 40]}]}, {
+                Offset[{25, 5}, {3.723818714156077*^9, 12.075}], 
+                Offset[{20, 0}, {3.723818714156077*^9, 12.075}], 
+                Offset[{25, -5}, {3.723818714156077*^9, 12.075}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"Controlling pump #0\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{25, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[483, 40]}], 
+               Offset[{25, 0}, {3.723818714156077*^9, 12.075}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238187141560771`17.323563481136134*^9, 
+                 Rational[57, 5]}], 
+               Offset[{0, 0}, {3.723818714156077*^9, 11.4}]], 
+              NCache[
+               Offset[{0, 0}, {3.7238187370697927`*^9, 
+                 Rational[51, 4]}], 
+               Offset[{0, 0}, {3.7238187370697927`*^9, 12.75}]]]}}}},
+         ImageSizeCache->{{374.7606933090101, 
+          516.7715408828844}, {-70.26265499722294, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:05:14\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "5", ",", 
+                    "14.1560771`8.903517870298403"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 5, 14.1560771`8.903517870298403}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.72381863894409*^9, 0}, {
+                3.72381863894409*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[59, 8]}], 
+                Offset[{20, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[59, 8]}], 
+                Offset[{20, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[3, 2]}], {3.7238186389440899`17.323563352353162*^9, 
+                 Rational[3, 2]}, {
+                3.7238186389440899`17.323563352353162*^9, 0}}, {
+                Offset[{30, 0}, {3.7238186385178056`*^9, 7.375}], 
+                Offset[{20, 0}, {3.7238186385178056`*^9, 7.375}], 
+                Offset[{20, 0}, {3.7238186385178056`*^9, 1.5}], {
+                3.72381863894409*^9, 1.5}, {3.72381863894409*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{30, 5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[59, 8]}], 
+                Offset[{25, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[59, 8]}], 
+                Offset[{30, -5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[59, 8]}]}, {
+                Offset[{30, 5}, {3.7238186385178056`*^9, 7.375}], 
+                Offset[{25, 0}, {3.7238186385178056`*^9, 7.375}], 
+                Offset[{30, -5}, {3.7238186385178056`*^9, 7.375}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"Performing 2 turn(s).\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[59, 8]}], 
+               Offset[{30, 0}, {3.7238186385178056`*^9, 7.375}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[67, 10]}], 
+               Offset[{0, 0}, {3.7238186385178056`*^9, 6.7}]], 
+              NCache[
+               Offset[{0, 0}, {3.7238186610558867`*^9, 
+                 Rational[161, 20]}], 
+               Offset[{0, 0}, {3.7238186610558867`*^9, 8.05}]]]}}}},
+         ImageSizeCache->{{97.2899444076429, 240.76855778962272`}, {
+          13.216227297266641`, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:58\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "58.9440899`9.523015097519188"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 58.9440899`9.523015097519188}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.723818638540821*^9, 0}, {
+                3.723818638540821*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[389, 40]}], 
+                Offset[{15, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[389, 40]}], 
+                Offset[{15, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[9, 8]}], {3.7238186385408212`17.323563352306127*^9, 
+                 Rational[9, 8]}, {
+                3.7238186385408212`17.323563352306127*^9, 0}}, {
+                Offset[{30, 0}, {3.7238186385178056`*^9, 9.725}], 
+                Offset[{15, 0}, {3.7238186385178056`*^9, 9.725}], 
+                Offset[{15, 0}, {3.7238186385178056`*^9, 1.125}], {
+                3.723818638540821*^9, 1.125}, {3.723818638540821*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{30, 5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[389, 40]}], 
+                Offset[{25, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[389, 40]}], 
+                Offset[{30, -5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[389, 40]}]}, {
+                Offset[{30, 5}, {3.7238186385178056`*^9, 9.725}], 
+                Offset[{25, 0}, {3.7238186385178056`*^9, 9.725}], 
+                Offset[{30, -5}, {3.7238186385178056`*^9, 9.725}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\".\\rControlling pump #0\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[389, 40]}], 
+               Offset[{30, 0}, {3.7238186385178056`*^9, 9.725}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[181, 20]}], 
+               Offset[{0, 0}, {3.7238186385178056`*^9, 9.05}]], 
+              NCache[
+               Offset[{0, 0}, {3.723818661994973*^9, 
+                 Rational[52, 5]}], 
+               Offset[{0, 0}, {3.723818661994973*^9, 10.4}]]]}}}},
+         ImageSizeCache->{{96.7606933090101, 
+          243.76855778962272`}, {-37.02321384997816, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:58\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "58.5408212`9.520033641307805"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 58.5408212`9.520033641307805}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238186385348167`*^9, 0}, {
+                3.7238186385348167`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[483, 40]}], 
+                Offset[{10, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[483, 40]}], 
+                Offset[{10, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[3, 4]}], {3.7238186385348166`17.32356335230543*^9, 
+                 Rational[3, 4]}, {
+                3.7238186385348166`17.32356335230543*^9, 0}}, {
+                Offset[{30, 0}, {3.7238186385178056`*^9, 12.075}], 
+                Offset[{10, 0}, {3.7238186385178056`*^9, 12.075}], 
+                Offset[{10, 0}, {3.7238186385178056`*^9, 0.75}], {
+                3.7238186385348167`*^9, 0.75}, {3.7238186385348167`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{30, 5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[483, 40]}], 
+                Offset[{25, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[483, 40]}], 
+                Offset[{30, -5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[483, 40]}]}, {
+                Offset[{30, 5}, {3.7238186385178056`*^9, 12.075}], 
+                Offset[{25, 0}, {3.7238186385178056`*^9, 12.075}], 
+                Offset[{30, -5}, {3.7238186385178056`*^9, 12.075}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"Performing 4 turn(s\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[483, 40]}], 
+               Offset[{30, 0}, {3.7238186385178056`*^9, 12.075}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[57, 5]}], 
+               Offset[{0, 0}, {3.7238186385178056`*^9, 11.4}]], 
+              NCache[
+               Offset[{0, 0}, {3.7238186599289827`*^9, 
+                 Rational[51, 4]}], 
+               Offset[{0, 0}, {3.7238186599289827`*^9, 12.75}]]]}}}},
+         ImageSizeCache->{{96.7606933090101, 
+          234.76855778962272`}, {-70.26265499722294, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:58\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "58.5348166`9.519989092933828"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 58.5348166`9.519989092933828}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238186385283117`*^9, 0}, {
+                3.7238186385283117`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[577, 40]}], 
+                Offset[{5, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[577, 40]}], 
+                Offset[{5, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[3, 8]}], {3.7238186385283115`17.32356335230467*^9, 
+                 Rational[3, 8]}, {
+                3.7238186385283115`17.32356335230467*^9, 0}}, {
+                Offset[{30, 0}, {3.7238186385178056`*^9, 14.425}], 
+                Offset[{5, 0}, {3.7238186385178056`*^9, 14.425}], 
+                Offset[{5, 0}, {3.7238186385178056`*^9, 0.375}], {
+                3.7238186385283117`*^9, 0.375}, {
+                3.7238186385283117`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{30, 5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[577, 40]}], 
+                Offset[{25, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[577, 40]}], 
+                Offset[{30, -5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[577, 40]}]}, {
+                Offset[{30, 5}, {3.7238186385178056`*^9, 14.425}], 
+                Offset[{25, 0}, {3.7238186385178056`*^9, 14.425}], 
+                Offset[{30, -5}, {3.7238186385178056`*^9, 14.425}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"trolling pump #1\\rSetting RPMs to 20.00.\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[577, 40]}], 
+               Offset[{30, 0}, {3.7238186385178056`*^9, 14.425}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[55, 4]}], 
+               Offset[{0, 0}, {3.7238186385178056`*^9, 13.75}]], 
+              NCache[
+               Offset[{0, 0}, {3.723818678335082*^9, 
+                 Rational[151, 10]}], 
+               Offset[{0, 0}, {3.723818678335082*^9, 15.1}]]]}}}},
+         ImageSizeCache->{{96.7606933090101, 
+          254.76855778962272`}, {-120.50209614446777`, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:58\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "58.5283115`9.519940826172416"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 58.5283115`9.519940826172416}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238186385178056`*^9, 0}, {
+                3.7238186385178056`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[671, 40]}], 
+                Offset[{0, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[671, 40]}], 
+                
+                Offset[{0, 0}, {
+                 3.7238186385178055`17.323563352303445*^9, 3}], {
+                3.7238186385178055`17.323563352303445*^9, 3}, {
+                3.7238186385178055`17.323563352303445*^9, 0}}, {
+                Offset[{30, 0}, {3.7238186385178056`*^9, 16.775}], 
+                Offset[{0, 0}, {3.7238186385178056`*^9, 16.775}], 
+                Offset[{0, 0}, {3.7238186385178056`*^9, 3}], {
+                3.7238186385178056`*^9, 3}, {3.7238186385178056`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{30, 5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[671, 40]}], 
+                Offset[{25, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[671, 40]}], 
+                Offset[{30, -5}, {3.7238186385178055`17.323563352303445*^9, 
+                  Rational[671, 40]}]}, {
+                Offset[{30, 5}, {3.7238186385178056`*^9, 16.775}], 
+                Offset[{25, 0}, {3.7238186385178056`*^9, 16.775}], 
+                Offset[{30, -5}, {3.7238186385178056`*^9, 16.775}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"Setting RPMs to 10.00.\\rCo\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{30, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[671, 40]}], 
+               Offset[{30, 0}, {3.7238186385178056`*^9, 16.775}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.7238186385178055`17.323563352303445*^9, 
+                 Rational[161, 10]}], 
+               Offset[{0, 0}, {3.7238186385178056`*^9, 16.1}]], 
+              NCache[
+               Offset[{0, 0}, {3.723818666126955*^9, 
+                 Rational[349, 20]}], 
+               Offset[{0, 0}, {3.723818666126955*^9, 17.45}]]]}}}},
+         ImageSizeCache->{{96.7606933090101, 
+          254.76855778962272`}, {-162.24153729171252`, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:58\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "58.5178055`9.519862862068075"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 58.5178055`9.519862862068075}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238186379379163`*^9, 0}, {
+                3.7238186379379163`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{10, 0}, {3.7238186379379162`17.323563354963344*^9, 
+                  Rational[107, 40]}], 
+                Offset[{0, 0}, {3.7238186379379162`17.323563354963344*^9, 
+                  Rational[107, 40]}], 
+                Offset[{0, 0}, {3.7238186379379162`17.323563354963344*^9, 
+                  Rational[3, 2]}], {3.7238186379379162`17.323563354963344*^9, 
+                 Rational[3, 2]}, {
+                3.7238186379379162`17.323563354963344*^9, 0}}, {
+                Offset[{10, 0}, {3.7238186379379163`*^9, 2.675}], 
+                Offset[{0, 0}, {3.7238186379379163`*^9, 2.675}], 
+                Offset[{0, 0}, {3.7238186379379163`*^9, 1.5}], {
+                3.7238186379379163`*^9, 1.5}, {3.7238186379379163`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{10, 5}, {3.7238186379379162`17.323563354963344*^9, 
+                  Rational[107, 40]}], 
+                Offset[{5, 0}, {3.7238186379379162`17.323563354963344*^9, 
+                  Rational[107, 40]}], 
+                Offset[{10, -5}, {3.7238186379379162`17.323563354963344*^9, 
+                  Rational[107, 40]}]}, {
+                Offset[{10, 5}, {3.7238186379379163`*^9, 2.675}], 
+                Offset[{5, 0}, {3.7238186379379163`*^9, 2.675}], 
+                Offset[{10, -5}, {3.7238186379379163`*^9, 2.675}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox[
+                 "\"Syringe pump communications established\\rThis is version \
+0.32.\\rControlling pump #0\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{10, 0}, {3.7238186379379162`17.323563354963344*^9, 
+                 Rational[107, 40]}], 
+               Offset[{10, 0}, {3.7238186379379163`*^9, 2.675}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              Offset[{0, 0}, {3.7238186379379163`*^9, 2}], 
+              NCache[
+               Offset[{0, 0}, {3.723818716257748*^9, 
+                 Rational[67, 20]}], 
+               Offset[{0, 0}, {3.723818716257748*^9, 3.35}]]]}}}},
+         ImageSizeCache->{{94.7606933090101, 389.49608159333366`}, {
+          79.69510959175625, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:57\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "57.9379162`9.515537704967295"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 57.9379162`9.515537704967295}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.723818631919874*^9, 0}, {
+                3.723818631919874*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{10, 0}, {3.723818631919874`17.323563370626655*^9, 
+                  Rational[201, 40]}], 
+                Offset[{0, 0}, {3.723818631919874`17.323563370626655*^9, 
+                  Rational[201, 40]}], 
+                Offset[{0, 0}, {3.723818631919874`17.323563370626655*^9, 
+                  Rational[3, 2]}], {3.723818631919874`17.323563370626655*^9, 
+                 Rational[3, 2]}, {
+                3.723818631919874`17.323563370626655*^9, 0}}, {
+                Offset[{10, 0}, {3.723818631919874*^9, 5.025}], 
+                Offset[{0, 0}, {3.723818631919874*^9, 5.025}], 
+                Offset[{0, 0}, {3.723818631919874*^9, 1.5}], {
+                3.723818631919874*^9, 1.5}, {3.723818631919874*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{10, 5}, {3.723818631919874`17.323563370626655*^9, 
+                  Rational[201, 40]}], 
+                Offset[{5, 0}, {3.723818631919874`17.323563370626655*^9, 
+                  Rational[201, 40]}], 
+                Offset[{10, -5}, {3.723818631919874`17.323563370626655*^9, 
+                  Rational[201, 40]}]}, {
+                Offset[{10, 5}, {3.723818631919874*^9, 5.025}], 
+                Offset[{5, 0}, {3.723818631919874*^9, 5.025}], 
+                Offset[{10, -5}, {3.723818631919874*^9, 5.025}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"Connected. Press reset on Arduino.\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{10, 0}, {3.723818631919874`17.323563370626655*^9, 
+                 Rational[201, 40]}], 
+               Offset[{10, 0}, {3.723818631919874*^9, 5.025}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              NCache[
+               Offset[{0, 0}, {3.723818631919874`17.323563370626655*^9, 
+                 Rational[87, 20]}], 
+               Offset[{0, 0}, {3.723818631919874*^9, 4.35}]], 
+              NCache[
+               Offset[{0, 0}, {3.7238186674173517`*^9, 
+                 Rational[57, 10]}], 
+               Offset[{0, 0}, {3.7238186674173517`*^9, 5.7}]]]}}}},
+         ImageSizeCache->{{72.7606933090101, 265.5183403518786}, {
+          54.95566844451143, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:51\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "51.919874`9.46790847989658"}], "}"}], ",", "\"Instant\"",
+                    ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 51.919874`9.46790847989658}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], "Tooltip"]& ]}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], AbsolutePointSize[7], 
+      AbsoluteThickness[1.6], Opacity[1], 
+      TagBox[
+       TooltipBox[
+        DynamicBox[{
+          FEPrivate`If[
+           CurrentValue["MouseOver"], 
+           Directive[
+            EdgeForm[
+             Directive[
+              RGBColor[0.368417, 0.506779, 0.709798], 
+              Thickness[Large], 
+              Opacity[0.2]]], 
+            FaceForm[{
+              RGBColor[
+              0.24561133333333335`, 0.3378526666666667, 0.4731986666666667], 
+              Opacity[1]}], 
+            CapForm["Round"], 
+            AbsoluteThickness[2.5], 
+            AbsolutePointSize[10], 
+            FrameBoxOptions -> {BoxFrame -> 2.5}], {}, {}], {{{
+             Directive[
+              Opacity[0.2]], {
+              CapForm["Round"], 
+              
+              LineBox[{{3.7238186178102136`*^9, 0}, {
+                3.7238186178102136`*^9, 0}}]}}, {{}, {{{}, {}}, {{}}}}}, {{
+             CapForm["Butt"], 
+             JoinForm["Round"], 
+             LineBox[
+              NCache[{
+                Offset[{10, 0}, {3.7238186178102134`17.32356340716651*^9, 
+                  Rational[107, 40]}], 
+                Offset[{0, 0}, {3.7238186178102134`17.32356340716651*^9, 
+                  Rational[107, 40]}], 
+                Offset[{0, 0}, {3.7238186178102134`17.32356340716651*^9, 
+                  Rational[3, 2]}], {3.7238186178102134`17.32356340716651*^9, 
+                 Rational[3, 2]}, {
+                3.7238186178102134`17.32356340716651*^9, 0}}, {
+                Offset[{10, 0}, {3.7238186178102136`*^9, 2.675}], 
+                Offset[{0, 0}, {3.7238186178102136`*^9, 2.675}], 
+                Offset[{0, 0}, {3.7238186178102136`*^9, 1.5}], {
+                3.7238186178102136`*^9, 1.5}, {3.7238186178102136`*^9, 0}}]], 
+             PolygonBox[
+              NCache[{
+                Offset[{10, 5}, {3.7238186178102134`17.32356340716651*^9, 
+                  Rational[107, 40]}], 
+                Offset[{5, 0}, {3.7238186178102134`17.32356340716651*^9, 
+                  Rational[107, 40]}], 
+                Offset[{10, -5}, {3.7238186178102134`17.32356340716651*^9, 
+                  Rational[107, 40]}]}, {
+                Offset[{10, 5}, {3.7238186178102136`*^9, 2.675}], 
+                Offset[{5, 0}, {3.7238186178102136`*^9, 2.675}], 
+                Offset[{10, -5}, {3.7238186178102136`*^9, 2.675}]}]], 
+             InsetBox[
+              BoxData[
+               FormBox[
+                FrameBox[
+                 StyleBox["\"Not connected\"", {
+                   GrayLevel[0.3]}, StripOnInput -> False], RoundingRadius -> 
+                 5, FrameMargins -> 5, Background -> GrayLevel[1], 
+                 StripOnInput -> False], TraditionalForm]], 
+              NCache[
+               Offset[{10, 0}, {3.7238186178102134`17.32356340716651*^9, 
+                 Rational[107, 40]}], 
+               Offset[{10, 0}, {3.7238186178102136`*^9, 2.675}]], {
+              Left, Center}, {Automatic, Automatic}]}, {
+             EdgeForm[], 
+             FaceForm[], 
+             RectangleBox[
+              Offset[{0, 0}, {3.7238186178102136`*^9, 2}], 
+              NCache[
+               Offset[{0, 0}, {3.7238186352772264`*^9, 
+                 Rational[67, 20]}], 
+               Offset[{0, 0}, {3.7238186352772264`*^9, 3.35}]]]}}}},
+         ImageSizeCache->{{20.760693309010094`, 117.65930485993522`}, {
+          96.69510959175625, 164.2393066909899}}],
+        StyleBox[
+         TagBox[
+          GridBox[{{
+             TemplateBox[{
+               RowBox[{"\"Mon 1 Jan 2018 18:03:37\"", 
+                 StyleBox[
+                  RowBox[{"\"GMT\"", "\[InvisibleSpace]", 
+                    RowBox[{"-", "5.`"}]}], FontColor -> GrayLevel[0.5]]}], 
+               RowBox[{"DateObject", "[", 
+                 RowBox[{
+                   RowBox[{"{", 
+                    
+                    RowBox[{
+                    "2018", ",", "1", ",", "1", ",", "18", ",", "3", ",", 
+                    "37.8102134`9.330184016759167"}], "}"}], ",", 
+                   "\"Instant\"", ",", "\"Gregorian\"", ",", 
+                   RowBox[{"-", "5.`"}], ",", 
+                   RowBox[{"{", "\"DateTimeShort\"", "}"}]}], "]"}]}, 
+              "DateObject", Editable -> False]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Right}}}, AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+          "Grid"], {}, StripOnInput -> False]],
+       Annotation[#, 
+        Style[
+         Grid[{{
+            
+            DateObject[{2018, 1, 1, 18, 3, 37.8102134`9.330184016759167}, 
+             "Instant", "Gregorian", -5., {"DateTimeShort"}]}}, Alignment -> 
+          Right], {}], 
+        "Tooltip"]& ]}}, {{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}}, \
+{}}}, {}, {}},
+  AspectRatio->NCache[
+    Rational[3461, 6000], 0.5768333333333333],
+  Axes->{False, False},
+  AxesOrigin->{0, 0},
+  Frame->{{None, None}, {True, None}},
+  FrameTicks->
+   FrontEndValueCache[{{None, None}, {
+     Charting`getDateTicks[Automatic, {Automatic}, 
+       (Map[DateList, {
+         SlotSequence[1]}]& )[
+        SlotSequence[1]], None, 7, {{0.01, 0}, {0.005, 0}}, Automatic]& , 
+      Automatic}}, {{None, None}, {{{3.72381864*^9, 
+        FormBox["\"18:04\"", TraditionalForm], {0.01, 0.}}, {3.7238187*^9, 
+        FormBox["\"18:05\"", TraditionalForm], {0.01, 0.}}, {3.72381876*^9, 
+        FormBox["\"18:06\"", TraditionalForm], {0.01, 0.}}, {3.723818625*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.72381864*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.723818655*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.72381867*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.723818685*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.7238187*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.723818715*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.72381873*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.723818745*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}, {
+       3.72381876*^9, 
+        FormBox[
+         TemplateBox[{0., 0.}, "Spacer2"], TraditionalForm], {0.005, 0.}}}, 
+      Automatic}}],
+  GridLines->{None, None},
+  ImagePadding->All,
+  ImageSize->{600, Automatic},
+  PlotRange->{{All, All}, {0, All}},
+  PlotRangePadding->{{
+     Scaled[0.04], 
+     Scaled[0.04]}, {None, 
+     Scaled[0.05]}},
+  Ticks->{{{3.72381864*^9, 
+      FormBox["\"18:04\"", TraditionalForm], {0.01, 0}}, {3.7238187*^9, 
+      FormBox["\"18:05\"", TraditionalForm], {0.01, 0}}, {3.72381876*^9, 
+      FormBox["\"18:06\"", TraditionalForm], {0.01, 0}}, {3.723818625*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.72381864*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.723818655*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.72381867*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.723818685*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.7238187*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.723818715*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.72381873*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.723818745*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}, {
+     3.72381876*^9, 
+      FormBox[
+       TemplateBox[{0, 0}, "Spacer2"], TraditionalForm], {0.005, 0}}}, 
+    None}]], "Output",
+ CellChangeTimes->{3.7238364172943773`*^9, 
+  3.7238367556258783`*^9},ExpressionUUID->"750e18a2-b532-4014-abfc-\
+31944b2a65cc"]
+}, Open  ]],
+
+Cell["\<\
+To operate both pumps simultaneously, commands have to be sent manually and \
+in the same cell:\
+\>", "Text",
+ CellChangeTimes->{{3.723836477442355*^9, 
+  3.7238365026139984`*^9}},ExpressionUUID->"6d6702b8-7164-45d5-96bd-\
+5ab15bc7b16f"],
+
+Cell[BoxData[
+ RowBox[{"connect", "[", "\"\<COM5\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.7238366247134104`*^9, 
+  3.7238366299165363`*^9}},ExpressionUUID->"226fcd09-8e28-42f9-9986-\
+e138454620e6"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"sendCommand", "[", "\"\<sp 0\>\"", "]"}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Prepares", " ", "fist", " ", "pump"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"sendCommand", "[", "\"\<ss 10\>\"", "]"}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Set", " ", "RPMS", " ", "to", " ", "10"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"sendCommand", "[", "\"\<sp 1\>\"", "]"}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Prepare", " ", "2", "nd", " ", "pump"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sendCommand", "[", "\"\<ss 20\>\"", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sendCommand", "[", "\"\<tu 4\>\"", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sendCommand", "[", "\"\<sp 0\>\"", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sendCommand", "[", "\"\<tu 2\>\"", "]"}], ";", " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Both", " ", "pumps", " ", "should", " ", 
+    RowBox[{"start", "/", "stop"}], " ", "at", " ", "the", " ", "same", " ", 
+    "time"}], " ", "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.723836504743924*^9, 
+  3.7238366122879205`*^9}},ExpressionUUID->"e93d7f90-e69e-4f4f-8e00-\
+9993ffcc34c0"],
+
+Cell["\<\
+Standard Mathematica tricks for streamlining code apply here as well.  The \
+code below is equivalent to the previous cell.\
+\>", "Text",
+ CellChangeTimes->{{3.723836666245947*^9, 
+  3.7238366961137996`*^9}},ExpressionUUID->"d8627188-b43b-486c-be94-\
+a47e25b6421b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"sendCommand", "/@", " ", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<sp 0\>\"", ",", " ", "\"\<ss 10\>\"", ",", " ", "\"\<sp 1\>\"", ",", 
+     " ", "\"\<ss 20\>\"", ",", " ", "\"\<tu 4\>\"", ",", " ", "\"\<sp 0\>\"",
+      ",", " ", "\"\<tu 2\>\""}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.7238366805163355`*^9, 
+  3.723836718982436*^9}},ExpressionUUID->"8fba3d95-f70f-415f-a842-\
+e1892dc36242"],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+  "Accessing", " ", "and", " ", "exporting", " ", "data", " ", "and", " ", 
+   RowBox[{"logs", ".", "  ", "All"}], " ", "information", " ", "is", " ", 
+   "timestamped", " ", "so", " ", "pump", " ", "movements", " ", "can", " ", 
+   "be", " ", "aligned", " ", "with", " ", "data", " ", 
+   RowBox[{"readings", "."}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.7238367427836065`*^9, 3.7238367504378815`*^9}, {
+  3.723836860961162*^9, 
+  3.7238369027606287`*^9}},ExpressionUUID->"f0f55c60-7b62-4567-8eaf-\
+635c6ca4aa8d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Using", " ", "scheduled", " ", "tasks", " ", "to", " ", "run", " ", 
+    RowBox[{"sequences", ".", "  ", "Useful"}], " ", "for", " ", "multiple", 
+    " ", "readings", " ", "of", " ", "sensors", " ", "while", " ", "pumps", 
+    " ", "are", " ", "moving"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"RunScheduledTask", "[", 
+   RowBox[{
+    RowBox[{"sendCommand", "[", "\"\<tu 1\>\"", "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"4", ",", "3"}], "}"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.723800796616508*^9, 3.723800797150339*^9}, {
+  3.7238368213797617`*^9, 
+  3.723836847124819*^9}},ExpressionUUID->"acf1b9cc-086b-4994-9f42-\
+bdd3196b3ed7"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["ScheduledTaskObject",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    TemplateBox[{PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource[
+               "FEBitmaps", "SquarePlusIconMedium"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              Evaluator -> Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GraphicsBox[{
+              Thickness[0.0016806722689075631`], {
+               FaceForm[{
+                 GrayLevel[0.93], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               RGBColor[0.699951, 0.699951, 0.699951], 
+               Opacity[1.], 
+               JoinForm[{"Miter", 10.}], 
+               
+               JoinedCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               FaceForm[{
+                 RGBColor[0.5, 0.5, 0.5], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}}, CompressedData["
+1:eJxTTMoPSmVmYGBgAmJeKN3AcrTfsFzTIaOEfaOxq6TD/X18c4yDlOD8Exu6
+zI34JR1Ou9aop+UqwfniLGF8upM04XyHpkfHZ0QbwPVbdDomPHUwdoCZD+OX
+Ms3ikPYzgPNzOH8uSDc2huuH8WHmw/gw+2H6Ye5Ddz+Mz8Ok3S520sQhuERl
++v8FCnB+8VbR36ffCTm0Lw8/ZWRiCOfD7IPxzwTLFhnvUYDrF66cVHJWRRhu
+Pow/30bnyiw1QzgfqHpC3W4TuH4YH2Y+jA+zH6Yf5j509wMALxiYpA==
+                "]], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {
+                 1, 3, 3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {0, 1, 
+                 0}, {0, 1, 0}, {0, 1, 0}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 
+                 3}, {1, 3, 3}}}, {CompressedData["
+1:eJxTTMoPSmViYGAQBWIQ7aJayjTrhZ7D7ltdf1PdlR18TrDbzv6q7lD9aUNA
+tpWGgxtYXt0hIHtW+RwnDQdWIRH7Y3fUHYCqQud7azg8Oj5j97QL6g4Z+R9a
+T4ZoOBjM1JKYukXdof63VcG5DA2HG43FblO2Ac1LNAo1yNJwyBNqPnDKUd2B
+mbNLPvmchsMXr8g2i29qDlL6d1XYEjXh/OtCnxzPs2nB+d8PpaxK2KLlsOMi
+wz0mT3WHcn85sSxfbQeP/bWyFsfVHXq8XrGYbNR2EHi5fT0zkH9EYUNRBpAP
+Vn8SKL/h4cupm7Qd9CYs+GH4TN1Bva5nZ/ZJbQdv807HBFYNh/VTUjuS72pD
+7FXTcJgQ88/511tth9vSNYlGqQYOv1d+vOS7ycDhjgpb49TF2g4siydZMb7V
+dEAPPwB9A46P
+                 "], {{12.732799999999997`, 18.446499999999997`}, {
+                 9.606250000000001, 18.446499999999997`}, {7.071879999999999, 
+                 15.912100000000002`}, {7.071879999999999, 
+                 12.785499999999997`}, {7.071879999999999, 
+                 9.659379999999999}, {9.606250000000001, 7.124999999999999}, {
+                 12.732799999999997`, 7.124999999999999}, {
+                 15.859000000000002`, 7.124999999999999}, {
+                 18.393399999999996`, 9.659379999999999}, {
+                 18.393399999999996`, 12.785499999999997`}, {
+                 18.393399999999996`, 15.912100000000002`}, {
+                 15.859000000000002`, 18.446499999999997`}, {
+                 12.732799999999997`, 18.446499999999997`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.892600000000002`, 13.848800000000004`}, {12.0758, 
+                13.964799999999997`}, {12.010499999999999`, 13.9324}, {
+                11.9496, 13.893399999999998`}, {11.892600000000002`, 
+                13.848800000000004`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.979700000000001`, 12.114099999999999`}, {
+                11.907399999999999`, 12.165599999999998`}, {
+                11.931199999999999`, 12.147699999999999`}, {11.9543, 
+                12.130099999999999`}, {11.979700000000001`, 
+                12.114099999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{11.8887,
+                 13.846499999999999`}, {11.8891, 13.8461}, {11.8902, 
+                13.846899999999998`}, {11.8914, 13.847999999999999`}, {
+                11.892600000000002`, 13.848800000000004`}, {11.8887, 
+                13.846499999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                11.852699999999999`, 12.2047}, {11.907399999999999`, 
+                12.165599999999998`}, {11.889800000000001`, 
+                12.178899999999999`}, {11.8734, 12.1934}, {11.8566, 
+                12.207399999999998`}, {11.852699999999999`, 12.2047}}}]}}, 
+             Axes -> False, AspectRatio -> 1, ImageSize -> {Automatic, 31.5}, 
+             Frame -> True, FrameTicks -> None, FrameStyle -> Directive[
+               Thickness[Tiny], 
+               GrayLevel[0.7]]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Unique ID: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["8", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Repetitions: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["3", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource[
+               "FEBitmaps", "SquareMinusIconMedium"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              Evaluator -> Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GraphicsBox[{
+              Thickness[0.0016806722689075631`], {
+               FaceForm[{
+                 GrayLevel[0.93], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               RGBColor[0.699951, 0.699951, 0.699951], 
+               Opacity[1.], 
+               JoinForm[{"Miter", 10.}], 
+               
+               JoinedCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               FaceForm[{
+                 RGBColor[0.5, 0.5, 0.5], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}}, CompressedData["
+1:eJxTTMoPSmVmYGBgAmJeKN3AcrTfsFzTIaOEfaOxq6TD/X18c4yDlOD8Exu6
+zI34JR1Ou9aop+UqwfniLGF8upM04XyHpkfHZ0QbwPVbdDomPHUwdoCZD+OX
+Ms3ikPYzgPNzOH8uSDc2huuH8WHmw/gw+2H6Ye5Ddz+Mz8Ok3S520sQhuERl
++v8FCnB+8VbR36ffCTm0Lw8/ZWRiCOfD7IPxzwTLFhnvUYDrF66cVHJWRRhu
+Pow/30bnyiw1QzgfqHpC3W4TuH4YH2Y+jA+zH6Yf5j509wMALxiYpA==
+                "]], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {
+                 1, 3, 3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {0, 1, 
+                 0}, {0, 1, 0}, {0, 1, 0}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 
+                 3}, {1, 3, 3}}}, {CompressedData["
+1:eJxTTMoPSmViYGAQBWIQ7aJayjTrhZ7D7ltdf1PdlR18TrDbzv6q7lD9aUNA
+tpWGgxtYXt0hIHtW+RwnDQdWIRH7Y3fUHYCqQud7azg8Oj5j97QL6g4Z+R9a
+T4ZoOBjM1JKYukXdof63VcG5DA2HG43FblO2Ac1LNAo1yNJwyBNqPnDKUd2B
+mbNLPvmchsMXr8g2i29qDlL6d1XYEjXh/OtCnxzPs2nB+d8PpaxK2KLlsOMi
+wz0mT3WHcn85sSxfbQeP/bWyFsfVHXq8XrGYbNR2EHi5fT0zkH9EYUNRBpAP
+Vn8SKL/h4cupm7Qd9CYs+GH4TN1Bva5nZ/ZJbQdv807HBFYNh/VTUjuS72pD
+7FXTcJgQ88/511tth9vSNYlGqQYOv1d+vOS7ycDhjgpb49TF2g4siydZMb7V
+dEAPPwB9A46P
+                 "], {{12.732799999999997`, 18.446499999999997`}, {
+                 9.606250000000001, 18.446499999999997`}, {7.071879999999999, 
+                 15.912100000000002`}, {7.071879999999999, 
+                 12.785499999999997`}, {7.071879999999999, 
+                 9.659379999999999}, {9.606250000000001, 7.124999999999999}, {
+                 12.732799999999997`, 7.124999999999999}, {
+                 15.859000000000002`, 7.124999999999999}, {
+                 18.393399999999996`, 9.659379999999999}, {
+                 18.393399999999996`, 12.785499999999997`}, {
+                 18.393399999999996`, 15.912100000000002`}, {
+                 15.859000000000002`, 18.446499999999997`}, {
+                 12.732799999999997`, 18.446499999999997`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.892600000000002`, 13.848800000000004`}, {12.0758, 
+                13.964799999999997`}, {12.010499999999999`, 13.9324}, {
+                11.9496, 13.893399999999998`}, {11.892600000000002`, 
+                13.848800000000004`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.979700000000001`, 12.114099999999999`}, {
+                11.907399999999999`, 12.165599999999998`}, {
+                11.931199999999999`, 12.147699999999999`}, {11.9543, 
+                12.130099999999999`}, {11.979700000000001`, 
+                12.114099999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{11.8887,
+                 13.846499999999999`}, {11.8891, 13.8461}, {11.8902, 
+                13.846899999999998`}, {11.8914, 13.847999999999999`}, {
+                11.892600000000002`, 13.848800000000004`}, {11.8887, 
+                13.846499999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                11.852699999999999`, 12.2047}, {11.907399999999999`, 
+                12.165599999999998`}, {11.889800000000001`, 
+                12.178899999999999`}, {11.8734, 12.1934}, {11.8566, 
+                12.207399999999998`}, {11.852699999999999`, 12.2047}}}]}}, 
+             Axes -> False, AspectRatio -> 1, ImageSize -> {Automatic, 31.5}, 
+             Frame -> True, FrameTicks -> None, FrameStyle -> Directive[
+               Thickness[Tiny], 
+               GrayLevel[0.7]]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Unique ID: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["8", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Repetitions: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["3", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                 "\"Interval between runs: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["4", "SummaryItem"], "\[InvisibleSpace]", 
+                 TagBox["\" seconds\"", "SummaryItemAnnotation"]}]}, {
+               RowBox[{
+                 TagBox["\"Minimum start time: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["Automatic", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel",
+     DisplayFunction->(
+      ButtonBox[#, Active -> False, Alignment -> Left, 
+       Appearance -> {
+        "Default" -> 
+         FrontEnd`FileName[{"Typeset", "SummaryBox"}, "Panel.9.png"]}, 
+       FrameMargins -> 7, BaseStyle -> {}, 
+       DefaultBaseStyle -> {"Panel", Background -> None}, BaselinePosition -> 
+       Baseline]& )],
+    DynamicModuleValues:>{}], "]"}],
+  ScheduledTaskObject[8, 
+   HoldForm[
+    OMIS`sendCommand["tu 1"]], {4, 3}, Automatic, True, "AutoRemove" -> False,
+    "EpilogFunction" :> Null, "TaskGroup" -> "Global`"],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellChangeTimes->{
+  3.723800800624157*^9},ExpressionUUID->"3c3d85da-cdd5-42c3-b279-\
+e2c3ac71356f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tsk", " ", "=", " ", 
+  RowBox[{"CreateScheduledTask", "[", 
+   RowBox[{
+    RowBox[{"sendCommand", "[", "\"\<re 1\>\"", "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "20"}], "}"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.723800815295212*^9, 3.7238008161301913`*^9}, {
+  3.7238008527600985`*^9, 3.723800853620313*^9}, {3.723831333982627*^9, 
+  3.7238313450337167`*^9}},ExpressionUUID->"fc2458ee-7567-43a9-af48-\
+6423fc593b79"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["ScheduledTaskObject",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    TemplateBox[{PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource[
+               "FEBitmaps", "SquarePlusIconMedium"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              Evaluator -> Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GraphicsBox[{
+              Thickness[0.0016806722689075631`], {
+               FaceForm[{
+                 GrayLevel[0.93], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               RGBColor[0.699951, 0.699951, 0.699951], 
+               Opacity[1.], 
+               JoinForm[{"Miter", 10.}], 
+               
+               JoinedCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               FaceForm[{
+                 RGBColor[0.5, 0.5, 0.5], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}}, CompressedData["
+1:eJxTTMoPSmVmYGBgAmJeKN3AcrTfsFzTIaOEfaOxq6TD/X18c4yDlOD8Exu6
+zI34JR1Ou9aop+UqwfniLGF8upM04XyHpkfHZ0QbwPVbdDomPHUwdoCZD+OX
+Ms3ikPYzgPNzOH8uSDc2huuH8WHmw/gw+2H6Ye5Ddz+Mz8Ok3S520sQhuERl
++v8FCnB+8VbR36ffCTm0Lw8/ZWRiCOfD7IPxzwTLFhnvUYDrF66cVHJWRRhu
+Pow/30bnyiw1QzgfqHpC3W4TuH4YH2Y+jA+zH6Yf5j509wMALxiYpA==
+                "]], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {
+                 1, 3, 3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {0, 1, 
+                 0}, {0, 1, 0}, {0, 1, 0}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 
+                 3}, {1, 3, 3}}}, {CompressedData["
+1:eJxTTMoPSmViYGAQBWIQ7aJayjTrhZ7D7ltdf1PdlR18TrDbzv6q7lD9aUNA
+tpWGgxtYXt0hIHtW+RwnDQdWIRH7Y3fUHYCqQud7azg8Oj5j97QL6g4Z+R9a
+T4ZoOBjM1JKYukXdof63VcG5DA2HG43FblO2Ac1LNAo1yNJwyBNqPnDKUd2B
+mbNLPvmchsMXr8g2i29qDlL6d1XYEjXh/OtCnxzPs2nB+d8PpaxK2KLlsOMi
+wz0mT3WHcn85sSxfbQeP/bWyFsfVHXq8XrGYbNR2EHi5fT0zkH9EYUNRBpAP
+Vn8SKL/h4cupm7Qd9CYs+GH4TN1Bva5nZ/ZJbQdv807HBFYNh/VTUjuS72pD
+7FXTcJgQ88/511tth9vSNYlGqQYOv1d+vOS7ycDhjgpb49TF2g4siydZMb7V
+dEAPPwB9A46P
+                 "], {{12.732799999999997`, 18.446499999999997`}, {
+                 9.606250000000001, 18.446499999999997`}, {7.071879999999999, 
+                 15.912100000000002`}, {7.071879999999999, 
+                 12.785499999999997`}, {7.071879999999999, 
+                 9.659379999999999}, {9.606250000000001, 7.124999999999999}, {
+                 12.732799999999997`, 7.124999999999999}, {
+                 15.859000000000002`, 7.124999999999999}, {
+                 18.393399999999996`, 9.659379999999999}, {
+                 18.393399999999996`, 12.785499999999997`}, {
+                 18.393399999999996`, 15.912100000000002`}, {
+                 15.859000000000002`, 18.446499999999997`}, {
+                 12.732799999999997`, 18.446499999999997`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.892600000000002`, 13.848800000000004`}, {12.0758, 
+                13.964799999999997`}, {12.010499999999999`, 13.9324}, {
+                11.9496, 13.893399999999998`}, {11.892600000000002`, 
+                13.848800000000004`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.979700000000001`, 12.114099999999999`}, {
+                11.907399999999999`, 12.165599999999998`}, {
+                11.931199999999999`, 12.147699999999999`}, {11.9543, 
+                12.130099999999999`}, {11.979700000000001`, 
+                12.114099999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{11.8887,
+                 13.846499999999999`}, {11.8891, 13.8461}, {11.8902, 
+                13.846899999999998`}, {11.8914, 13.847999999999999`}, {
+                11.892600000000002`, 13.848800000000004`}, {11.8887, 
+                13.846499999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                11.852699999999999`, 12.2047}, {11.907399999999999`, 
+                12.165599999999998`}, {11.889800000000001`, 
+                12.178899999999999`}, {11.8734, 12.1934}, {11.8566, 
+                12.207399999999998`}, {11.852699999999999`, 12.2047}}}]}}, 
+             Axes -> False, AspectRatio -> 1, ImageSize -> {Automatic, 31.5}, 
+             Frame -> True, FrameTicks -> None, FrameStyle -> Directive[
+               Thickness[Tiny], 
+               GrayLevel[0.7]]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Unique ID: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["12", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Repetitions: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["20", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource[
+               "FEBitmaps", "SquareMinusIconMedium"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              Evaluator -> Automatic, Method -> "Preemptive"], 
+             Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GraphicsBox[{
+              Thickness[0.0016806722689075631`], {
+               FaceForm[{
+                 GrayLevel[0.93], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               RGBColor[0.699951, 0.699951, 0.699951], 
+               Opacity[1.], 
+               JoinForm[{"Miter", 10.}], 
+               
+               JoinedCurveBox[{{{1, 4, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}, {
+                1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                25.499999999999996`, 2.5}, {25.499999999999996`, 
+                1.3953100000000003`}, {24.604699999999998`, 
+                0.49999999999999994`}, {23.5, 0.49999999999999994`}, {2.5, 
+                0.49999999999999994`}, {1.3953100000000003`, 
+                0.49999999999999994`}, {0.49999999999999994`, 
+                1.3953100000000003`}, {0.49999999999999994`, 2.5}, {
+                0.49999999999999994`, 23.5}, {0.49999999999999994`, 
+                24.604699999999998`}, {1.3953100000000003`, 
+                25.499999999999996`}, {2.5, 25.499999999999996`}, {23.5, 
+                25.499999999999996`}, {24.604699999999998`, 
+                25.499999999999996`}, {25.499999999999996`, 
+                24.604699999999998`}, {25.499999999999996`, 23.5}, {
+                25.499999999999996`, 2.5}}}]}, {
+               FaceForm[{
+                 RGBColor[0.5, 0.5, 0.5], 
+                 Opacity[1.]}], 
+               
+               FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                3}}}, CompressedData["
+1:eJxTTMoPSmVmYGBgAmJeKN3AcrTfsFzTIaOEfaOxq6TD/X18c4yDlOD8Exu6
+zI34JR1Ou9aop+UqwfniLGF8upM04XyHpkfHZ0QbwPVbdDomPHUwdoCZD+OX
+Ms3ikPYzgPNzOH8uSDc2huuH8WHmw/gw+2H6Ye5Ddz+Mz8Ok3S520sQhuERl
++v8FCnB+8VbR36ffCTm0Lw8/ZWRiCOfD7IPxzwTLFhnvUYDrF66cVHJWRRhu
+Pow/30bnyiw1QzgfqHpC3W4TuH4YH2Y+jA+zH6Yf5j509wMALxiYpA==
+                "]], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {
+                 1, 3, 3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {0, 1, 
+                 0}, {0, 1, 0}, {0, 1, 0}}, {{1, 4, 3}, {1, 3, 3}, {1, 3, 
+                 3}, {1, 3, 3}}}, {CompressedData["
+1:eJxTTMoPSmViYGAQBWIQ7aJayjTrhZ7D7ltdf1PdlR18TrDbzv6q7lD9aUNA
+tpWGgxtYXt0hIHtW+RwnDQdWIRH7Y3fUHYCqQud7azg8Oj5j97QL6g4Z+R9a
+T4ZoOBjM1JKYukXdof63VcG5DA2HG43FblO2Ac1LNAo1yNJwyBNqPnDKUd2B
+mbNLPvmchsMXr8g2i29qDlL6d1XYEjXh/OtCnxzPs2nB+d8PpaxK2KLlsOMi
+wz0mT3WHcn85sSxfbQeP/bWyFsfVHXq8XrGYbNR2EHi5fT0zkH9EYUNRBpAP
+Vn8SKL/h4cupm7Qd9CYs+GH4TN1Bva5nZ/ZJbQdv807HBFYNh/VTUjuS72pD
+7FXTcJgQ88/511tth9vSNYlGqQYOv1d+vOS7ycDhjgpb49TF2g4siydZMb7V
+dEAPPwB9A46P
+                 "], {{12.732799999999997`, 18.446499999999997`}, {
+                 9.606250000000001, 18.446499999999997`}, {7.071879999999999, 
+                 15.912100000000002`}, {7.071879999999999, 
+                 12.785499999999997`}, {7.071879999999999, 
+                 9.659379999999999}, {9.606250000000001, 7.124999999999999}, {
+                 12.732799999999997`, 7.124999999999999}, {
+                 15.859000000000002`, 7.124999999999999}, {
+                 18.393399999999996`, 9.659379999999999}, {
+                 18.393399999999996`, 12.785499999999997`}, {
+                 18.393399999999996`, 15.912100000000002`}, {
+                 15.859000000000002`, 18.446499999999997`}, {
+                 12.732799999999997`, 18.446499999999997`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.892600000000002`, 13.848800000000004`}, {12.0758, 
+                13.964799999999997`}, {12.010499999999999`, 13.9324}, {
+                11.9496, 13.893399999999998`}, {11.892600000000002`, 
+                13.848800000000004`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}}}, {{{
+                11.979700000000001`, 12.114099999999999`}, {
+                11.907399999999999`, 12.165599999999998`}, {
+                11.931199999999999`, 12.147699999999999`}, {11.9543, 
+                12.130099999999999`}, {11.979700000000001`, 
+                12.114099999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{11.8887,
+                 13.846499999999999`}, {11.8891, 13.8461}, {11.8902, 
+                13.846899999999998`}, {11.8914, 13.847999999999999`}, {
+                11.892600000000002`, 13.848800000000004`}, {11.8887, 
+                13.846499999999999`}}}], 
+               
+               FilledCurveBox[{{{0, 2, 0}, {1, 3, 3}, {0, 1, 0}}}, {{{
+                11.852699999999999`, 12.2047}, {11.907399999999999`, 
+                12.165599999999998`}, {11.889800000000001`, 
+                12.178899999999999`}, {11.8734, 12.1934}, {11.8566, 
+                12.207399999999998`}, {11.852699999999999`, 12.2047}}}]}}, 
+             Axes -> False, AspectRatio -> 1, ImageSize -> {Automatic, 31.5}, 
+             Frame -> True, FrameTicks -> None, FrameStyle -> Directive[
+               Thickness[Tiny], 
+               GrayLevel[0.7]]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Unique ID: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["12", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Repetitions: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["20", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                 "\"Interval between runs: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["1", "SummaryItem"], "\[InvisibleSpace]", 
+                 TagBox["\" second\"", "SummaryItemAnnotation"]}]}, {
+               RowBox[{
+                 TagBox["\"Minimum start time: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["Automatic", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel",
+     DisplayFunction->(
+      ButtonBox[#, Active -> False, Alignment -> Left, 
+       Appearance -> {
+        "Default" -> 
+         FrontEnd`FileName[{"Typeset", "SummaryBox"}, "Panel.9.png"]}, 
+       FrameMargins -> 7, BaseStyle -> {}, 
+       DefaultBaseStyle -> {"Panel", Background -> None}, BaselinePosition -> 
+       Baseline]& )],
+    DynamicModuleValues:>{}], "]"}],
+  ScheduledTaskObject[12, 
+   HoldForm[
+    OMIS`sendCommand["re 1"]], {1, 20}, Automatic, False, "AutoRemove" -> 
+   False, "EpilogFunction" :> Null, "TaskGroup" -> "Global`"],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellChangeTimes->{3.7238008191009893`*^9, 3.7238008548328047`*^9, 
+  3.723831346048914*^9},ExpressionUUID->"ab8601ee-e800-42b8-82fc-\
+3163fcd795df"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{887, 540},
+WindowMargins->{{94, Automatic}, {18, Automatic}},
+FrontEndVersion->"11.2 for Microsoft Windows (64-bit) (September 10, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 193, 3, 67, "Section",ExpressionUUID->"72e2e01e-b595-40f2-9d23-400acc8500e9"],
+Cell[CellGroupData[{
+Cell[798, 29, 174, 3, 44, "Subsubsection",ExpressionUUID->"da42a49d-ab34-49f5-b0d6-13803e625a12"],
+Cell[975, 34, 333, 7, 56, "Text",ExpressionUUID->"3861f2ba-8aa8-4976-b46d-f2ccaaed8296"],
+Cell[1311, 43, 396, 10, 48, "Input",ExpressionUUID->"34a63fe8-d496-41f9-8fab-342093105e9c"],
+Cell[1710, 55, 705, 14, 100, "Text",ExpressionUUID->"c0e3bf91-9863-40fc-a19a-89685180ab6c"],
+Cell[CellGroupData[{
+Cell[2440, 73, 337, 7, 28, "Input",ExpressionUUID->"2d9df925-af5d-43ec-a339-30e67a4e1b05"],
+Cell[2780, 82, 262, 5, 32, "Output",ExpressionUUID->"c310166b-a215-4943-b0af-b94f834a0219"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3091, 93, 250, 4, 44, "Subsubsection",ExpressionUUID->"c148478f-4dd2-453c-a241-51cf23edd273"],
+Cell[3344, 99, 403, 8, 78, "Text",ExpressionUUID->"d66ed02d-6932-4e84-afa4-157d0037d443"],
+Cell[CellGroupData[{
+Cell[3772, 111, 188, 4, 28, "Input",ExpressionUUID->"bd54b3fc-82f2-4420-9a11-c5877f04ced9"],
+Cell[3963, 117, 265, 5, 22, "Print",ExpressionUUID->"42da26bc-616b-4a42-8f6a-9952f3662a88"]
+}, Open  ]],
+Cell[4243, 125, 221, 5, 28, "Input",ExpressionUUID->"b54de3d9-9948-41f0-bc86-fbe1f5d10d25"],
+Cell[4467, 132, 236, 6, 34, "Text",ExpressionUUID->"417c8f93-3a42-4305-959d-3d1cae64c4e1"],
+Cell[4706, 140, 238, 5, 28, "Input",ExpressionUUID->"dc6822dc-25c6-46e1-8f7f-8a06ce9eb731"],
+Cell[4947, 147, 323, 7, 56, "Text",ExpressionUUID->"fb9f49d5-39aa-4c92-9d42-83de10bbb880"],
+Cell[5273, 156, 258, 5, 28, "Input",ExpressionUUID->"d6a311ac-58fb-46f9-84fc-1f0c009e97de"],
+Cell[5534, 163, 1280, 29, 364, "Text",ExpressionUUID->"833997ad-7baf-43c8-96ac-6ef4075f145b"],
+Cell[6817, 194, 289, 6, 28, "Input",ExpressionUUID->"ce4a67ee-188a-4ce6-96ed-83f211af687e"],
+Cell[7109, 202, 310, 7, 56, "Text",ExpressionUUID->"a96e6e47-5186-452d-84c8-c92bb513d8a4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7456, 214, 163, 3, 44, "Subsubsection",ExpressionUUID->"1b804b3e-7812-44cb-ac60-8e63f6bf097b"],
+Cell[7622, 219, 271, 6, 34, "Text",ExpressionUUID->"19ced4bf-c3f5-41a0-aa7e-464734c62dd0"],
+Cell[CellGroupData[{
+Cell[7918, 229, 185, 4, 28, "Input",ExpressionUUID->"f6b1d797-66ce-42ee-bd08-a23ceb993ca3"],
+Cell[8106, 235, 63678, 1427, 379, "Output",ExpressionUUID->"750e18a2-b532-4014-abfc-31944b2a65cc"]
+}, Open  ]],
+Cell[71799, 1665, 247, 6, 34, "Text",ExpressionUUID->"6d6702b8-7164-45d5-96bd-5ab15bc7b16f"],
+Cell[72049, 1673, 201, 4, 28, "Input",ExpressionUUID->"226fcd09-8e28-42f9-9986-e138454620e6"],
+Cell[72253, 1679, 1321, 36, 143, "Input",ExpressionUUID->"e93d7f90-e69e-4f4f-8e00-9993ffcc34c0"],
+Cell[73577, 1717, 275, 6, 34, "Text",ExpressionUUID->"d8627188-b43b-486c-be94-a47e25b6421b"],
+Cell[73855, 1725, 436, 10, 28, "Input",ExpressionUUID->"8fba3d95-f70f-415f-a842-e1892dc36242"],
+Cell[74294, 1737, 568, 11, 48, "Input",ExpressionUUID->"f0f55c60-7b62-4567-8eaf-635c6ca4aa8d"],
+Cell[CellGroupData[{
+Cell[74887, 1752, 717, 16, 67, "Input",ExpressionUUID->"acf1b9cc-086b-4994-9f42-bdd3196b3ed7"],
+Cell[75607, 1770, 16901, 317, 71, "Output",ExpressionUUID->"3c3d85da-cdd5-42c3-b279-e2c3ac71356f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[92545, 2092, 461, 10, 28, "Input",ExpressionUUID->"fc2458ee-7567-43a9-af48-6423fc593b79"],
+Cell[93009, 2104, 16955, 317, 71, "Output",ExpressionUUID->"ab8601ee-e800-42b8-82fc-3163fcd795df"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

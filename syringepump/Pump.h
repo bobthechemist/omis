@@ -52,9 +52,9 @@ class Pump {
 
     /* TODO: make stepBuffer and addSteps private */
     // Non-blocking motor movement
-    int stepBuffer = 0; // Number of steps that motor should take, should be private
+    long stepBuffer = 0; // Number of steps that motor should take, should be private
     void tryStep(void); // To place in loop to see if step should be taken
-    int addSteps(int); // Add steps to the step buffer, should be private
+    long addSteps(long); // Add steps to the step buffer, should be private
 
     // release stepper coils
     void unlock(void);

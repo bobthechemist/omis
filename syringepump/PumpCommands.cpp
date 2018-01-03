@@ -17,7 +17,7 @@ int Pump::operate(String op, String arg){
     else {Serial.println(pumpBusyErrorString);}
   }
   else if ( op == "tu" ) {
-    if(this->addSteps( int(arg.toFloat() * this->number_of_steps ))) {
+    if(this->addSteps( long(arg.toFloat() * this->number_of_steps ))) {
       Serial.println("Performing " + arg + " turn(s).");
     }
     else {Serial.println(pumpBusyErrorString);}
