@@ -12,8 +12,8 @@ The **Open Millifluidic Inquiry System** (OMIS) is a platform for lab-on-a-chip 
 5. Upload the sketch in the software directory to your Arduino.
 
 ## Resources
-- [The github](www.github.com/bobthechemist/omis) repository will be used for version management and issue tracking.  This will be true for design files, software and lessons/activities.
-- My [personal webpage](www.bobthechemist.com/omis) will be the source for commentary and any opinions I have on the project.
+- [The github](http://www.github.com/bobthechemist/omis) repository will be used for version management and issue tracking.  This will be true for design files, software and lessons/activities.
+- My [personal webpage](http://www.bobthechemist.com/omis) will be the source for commentary and any opinions I have on the project.
 - The build at [Thingiverse](http://www.thingiverse.com/thing:1646999) will remain as the original version for historical reasons.
 
 
